@@ -1,20 +1,21 @@
 package com.gray.reader;
 
+import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.FrameLayout;
 
 import com.gray.reader.page.BasePage;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 /**
@@ -51,9 +52,12 @@ public class ReaderLayout extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        Log.e("index", index + "-");
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 downX = event.getX();
+                moveX = 0;
+                Log.e("downX", downX + "_");
                 return true;
             case MotionEvent.ACTION_MOVE:
                 moveX = event.getX() - downX;
@@ -88,35 +92,109 @@ public class ReaderLayout extends FrameLayout {
     //翻到前一页
     private void moveToPrevious(float moveX) {
         Log.e("moveToPrevious", "前一页");
-        View childAt = getChildAt(0);
-        int width = childAt.getWidth();
-        childAt.setTranslationX(width);
+        if (index == 0) {
+            return;
+        }
+        ObjectAnimator objectAnimator = currentPage.animCurrentToNext(moveX);
+        ObjectAnimator objectAnimator1 = previousPage.animPreviousToCurrent(moveX);
+        objectAnimator1.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                afterToPrevious();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        objectAnimator.start();
+        objectAnimator1.start();
     }
 
     //翻到下一页
     private void moveToNext(float moveX) {
         Log.e("moveToNext", "下一页");
-        View childAt = getChildAt(0);
-        int width = childAt.getWidth();
-        ObjectAnimator objectAnimator =
-                ObjectAnimator.ofFloat(childAt, "translationX", moveX, (float) (0 - width));
+        //是否还有下一页
+        if (pages.size() == 1) {
+            return;
+        }
+        ObjectAnimator objectAnimator = currentPage.animCurrentToPrevious(moveX);
+        ObjectAnimator objectAnimator1 = nextPage.animNextToCurrent(moveX);
+        objectAnimator1.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                afterToNext();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
         objectAnimator.start();
+        objectAnimator1.start();
     }
 
     private void childMove(float moveX) {
-        View childAt = getChildAt(0);
-        childAt.setTranslationX(moveX);
         if (pages.isEmpty()) {
             return;
         }
         if (moveX > 0) {
-            pages.getFirst().currentToNext(moveX);
+            if (index == 0) {
+                return;
+            }
+            currentPage.currentToNext(moveX);
+            previousPage.previousToCurrent(moveX);
         } else {
-            pages.getFirst().currentToPrevious(moveX);
+            if (pages.size() == 1) {
+                return;
+            }
+            currentPage.currentToPrevious(moveX);
+            nextPage.nextToCurrent(moveX);
         }
     }
 
 
+    private void afterToPrevious() {
+        //重新确认页面位置
+        pages.push(previousPage);
+        previousPage = pages.removeLast();
+        currentPage = pages.getFirst();
+        nextPage = pages.getLast();
+        --index;
+    }
+
+    private void afterToNext() {
+        //重新确认页面位置
+        pages.add(previousPage);
+        previousPage = pages.removeFirst();
+        currentPage = pages.getFirst();
+        nextPage = pages.getLast();
+        ++index;
+    }
+
+
+    //创建页面
     public void setPage(Class clazz) {
         if (!BasePage.class.isAssignableFrom(clazz)) {
             throw new IllegalArgumentException("class需要继承BasePage");
@@ -127,15 +205,21 @@ public class ReaderLayout extends FrameLayout {
             for (int i = 0; i < 2; ++i) {
                 BasePage basePage = (BasePage) constructor.newInstance(getContext());
                 pages.add(0, basePage);
-                addView(basePage, i);
             }
             previousPage = (BasePage) constructor.newInstance(getContext());
-
+            previousPage.setBackgroundColor(Color.RED);
+            addView(previousPage, 0 - getDisplayWidth(), 0);
+            nextPage = pages.getLast();
+            nextPage.setBackgroundColor(Color.BLUE);
+            addView(nextPage, getDisplayWidth(), 0);
+            currentPage = pages.getFirst();
+            currentPage.setBackgroundColor(Color.YELLOW);
+            addView(currentPage);
         } catch (NoSuchMethodException
                 | InstantiationException
                 | InvocationTargetException
                 | IllegalAccessException e) {
-            e.printStackTrace();
+            Log.e("Error", Arrays.toString(e.getStackTrace()));
         }
 
     }
