@@ -1,6 +1,5 @@
 package com.gray.reader.page;
 
-import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,7 +11,7 @@ import android.view.View;
 /**
  * @author wjy on 2018/4/6.
  */
-public abstract class BasePage extends View {
+public abstract class BasePage extends View implements IReaderPage {
     private Paint paint;
 
     public BasePage(Context context) {
@@ -26,8 +25,8 @@ public abstract class BasePage extends View {
     public BasePage(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         paint = new Paint();
-        paint.setTextSize(20);
-        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        paint.setTextSize(50);
+        paint.setStyle(Paint.Style.STROKE);
         paint.setColor(Color.GREEN);
     }
 
@@ -42,8 +41,8 @@ public abstract class BasePage extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawText(System.currentTimeMillis() + "", (float) getDisplayHeight(),
-                (float) getDisplayHeight(), paint);
+        canvas.drawText(System.currentTimeMillis() + "", (float) 200,
+                (float) 200, paint);
     }
 
     protected int getDisplayWidth() {
@@ -54,24 +53,5 @@ public abstract class BasePage extends View {
         return getResources().getDisplayMetrics().heightPixels;
     }
 
-    //当前页面向左移动
-    public abstract void currentToPrevious(float moveX);
-
-    //当前页面向右移动
-    public abstract void currentToNext(float moveX);
-
-    public abstract void previousToCurrent(float moveX);
-
-    public abstract void nextToCurrent(float moveX);
-
-    //当前页面向左移动 动画效果
-    public abstract ObjectAnimator animCurrentToPrevious(float moveX);
-
-    //当前页面向右移动
-    public abstract ObjectAnimator animCurrentToNext(float moveX);
-
-    public abstract ObjectAnimator animPreviousToCurrent(float moveX);
-
-    public abstract ObjectAnimator animNextToCurrent(float moveX);
 
 }

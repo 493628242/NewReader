@@ -22,57 +22,62 @@ public class NormalPage extends BasePage {
     }
 
     @Override
-    public void currentToPrevious(float moveX) {
+    public void currentToPrevious(float moveX, float moveY, float mMoveX) {
         setTranslationX(moveX);
     }
 
     @Override
-    public void currentToNext(float moveX) {
+    public void currentToNext(float moveX, float moveY, float mMoveX) {
         setTranslationX(moveX);
     }
 
     @Override
-    public void previousToCurrent(float moveX) {
+    public void previousToCurrent(float moveX, float moveY, float mMoveX) {
         //moveX一定>0
         setTranslationX(0 - getDisplayWidth() + moveX);
     }
 
     @Override
-    public void nextToCurrent(float moveX) {
+    public void nextToCurrent(float moveX, float moveY, float mMoveX) {
         //moveX<0
         setTranslationX(getDisplayWidth() + moveX);
 
     }
 
     @Override
-    public ObjectAnimator animCurrentToPrevious(float moveX) {
+    public ObjectAnimator animCurrentToPrevious(float moveX, float moveY, float mMoveX) {
         return
                 ObjectAnimator.ofFloat(this, "translationX",
-                        moveX, (float) (0 - getDisplayWidth()));
+                        mMoveX == 0 ? 0 : moveX, (float) (0 - getDisplayWidth()));
 //        objectAnimator.start();
     }
 
     @Override
-    public ObjectAnimator animCurrentToNext(float moveX) {
+    public ObjectAnimator animCurrentToNext(float moveX, float moveY, float mMoveX) {
         return
                 ObjectAnimator.ofFloat(this, "translationX",
-                        moveX, (float) getDisplayWidth());
+                        mMoveX == 0 ? 0 : moveX, (float) getDisplayWidth());
 //        objectAnimator.start();
     }
 
     @Override
-    public ObjectAnimator animPreviousToCurrent(float moveX) {
+    public ObjectAnimator animPreviousToCurrent(float moveX, float moveY, float mMoveX) {
         return
                 ObjectAnimator.ofFloat(this, "translationX",
-                        (0 - getDisplayWidth() + moveX), 0);
+                        mMoveX == 0 ? 0 - mMoveX : (0 - getDisplayWidth() + moveX), 0);
 //        objectAnimator.start();
     }
 
     @Override
-    public ObjectAnimator animNextToCurrent(float moveX) {
+    public ObjectAnimator animNextToCurrent(float moveX, float moveY, float mMoveX) {
         return
                 ObjectAnimator.ofFloat(this, "translationX",
-                        (getDisplayWidth() + moveX), 0);
+                        mMoveX == 0 ? getDisplayWidth() : (getDisplayWidth() + moveX), 0);
 //        objectAnimator.start();
+    }
+
+    @Override
+    public void reset() {
+        setX(0);
     }
 }

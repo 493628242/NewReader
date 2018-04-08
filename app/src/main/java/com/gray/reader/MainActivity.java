@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.eschao.android.widget.pageflip.PageFlip;
+import com.gray.reader.page.FlipPage;
 import com.gray.reader.page.NormalPage;
 
 public class MainActivity extends AppCompatActivity {
@@ -14,7 +16,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ReaderLayout readerLayout = findViewById(R.id.reader);
-        readerLayout.setPage(NormalPage.class);
+        readerLayout.setPage(FlipPage.class);
         readerLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
