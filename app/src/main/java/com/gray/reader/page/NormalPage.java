@@ -21,6 +21,7 @@ public class NormalPage extends BasePage {
         super(context, attrs, defStyleAttr);
     }
 
+
     @Override
     public void currentToPrevious(float moveX, float moveY, float mMoveX) {
         setTranslationX(moveX);
@@ -64,7 +65,7 @@ public class NormalPage extends BasePage {
     public ObjectAnimator animPreviousToCurrent(float moveX, float moveY, float mMoveX) {
         return
                 ObjectAnimator.ofFloat(this, "translationX",
-                        mMoveX == 0 ? 0 - mMoveX : (0 - getDisplayWidth() + moveX), 0);
+                        mMoveX == 0 ? 0 - getDisplayWidth() : (0 - getDisplayWidth() + moveX), 0);
 //        objectAnimator.start();
     }
 

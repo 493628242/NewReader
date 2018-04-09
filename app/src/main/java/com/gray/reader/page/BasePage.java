@@ -6,13 +6,22 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+
+import com.gray.reader.R;
+import com.gray.reader.ReadView;
 
 /**
  * @author wjy on 2018/4/6.
  */
-public abstract class BasePage extends View implements IReaderPage {
-    private Paint paint;
+public abstract class BasePage extends FrameLayout implements IReaderPage {
+    public ReadView smallTitle;
+    public ReadView bigTitle;
+    public ReadView content;
 
     public BasePage(Context context) {
         this(context, null);
@@ -24,10 +33,17 @@ public abstract class BasePage extends View implements IReaderPage {
 
     public BasePage(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        paint = new Paint();
-        paint.setTextSize(50);
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.GREEN);
+        initView();
+    }
+
+    private void initView() {
+        View inflate = LayoutInflater.from(getContext()).inflate(R.layout.layout_page, this,
+                false);
+        smallTitle = inflate.findViewById(R.id.small_title);
+        bigTitle = inflate.findViewById(R.id.big_title);
+        content = inflate.findViewById(R.id.content);
+        addView(inflate);
+        inflate.setBackgroundColor(Color.GREEN);
     }
 
 
@@ -37,13 +53,6 @@ public abstract class BasePage extends View implements IReaderPage {
                 MeasureSpec.makeMeasureSpec(getDisplayHeight(), MeasureSpec.EXACTLY));
     }
 
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        canvas.drawText(System.currentTimeMillis() + "", (float) 200,
-                (float) 200, paint);
-    }
 
     protected int getDisplayWidth() {
         return getResources().getDisplayMetrics().widthPixels;

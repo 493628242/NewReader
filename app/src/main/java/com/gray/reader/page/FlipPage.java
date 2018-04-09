@@ -82,8 +82,8 @@ public class FlipPage extends BasePage {
         pathAPaint.setAntiAlias(true);//设置抗锯齿
 
         pathBPaint = new Paint();
-//        pathBPaint.setColor(getResources().getColor(R.color.blue_light));
-        pathBPaint.setColor(0x00ff00ff);
+        pathBPaint.setColor(getResources().getColor(R.color.blue_light));
+//        pathBPaint.setColor(0x00fff00f);
         pathBPaint.setAntiAlias(true);//设置抗锯齿
         pathBPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_ATOP));
 
@@ -98,9 +98,7 @@ public class FlipPage extends BasePage {
         pathB = new Path();
         pathC = new Path();
 
-        bitmap = Bitmap.createBitmap(getDisplayWidth(), getDisplayHeight(),
-                Bitmap.Config.ARGB_8888);
-        bitmapCanvas = new Canvas(bitmap);
+
     }
 
     @Override
@@ -130,7 +128,12 @@ public class FlipPage extends BasePage {
 
     @Override
     protected void onDraw(Canvas canvas) {
+
+
         super.onDraw(canvas);
+        bitmap = Bitmap.createBitmap(getDisplayWidth(), getDisplayHeight(),
+                Bitmap.Config.ARGB_8888);
+        bitmapCanvas = new Canvas(bitmap);
         if (a.x == -1 && a.y == -1) {
             bitmapCanvas.drawPath(getPathDefault(), pathAPaint);
         } else {
@@ -140,7 +143,7 @@ public class FlipPage extends BasePage {
                 bitmapCanvas.drawPath(getPathAFromLowerRight(), pathAPaint);
             }
             bitmapCanvas.drawPath(getPathC(), pathCPaint);
-            bitmapCanvas.drawPath(getPathB(), pathBPaint);
+//            bitmapCanvas.drawPath(getPathB(), pathBPaint);
         }
         canvas.drawBitmap(bitmap, 0, 0, null);
     }
