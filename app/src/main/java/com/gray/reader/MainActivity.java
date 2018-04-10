@@ -29,16 +29,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ReaderLayout readerLayout = findViewById(R.id.reader);
-
-        readerLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.e("click", "点击监听");
-            }
-        });
-        ReaderAdapter adapter = new ReaderAdapter(word, title, author);
-        readerLayout.setAdapter(adapter);
-        readerLayout.setPage(NormalPage.class);
+//        ReaderLayout readerLayout = findViewById(R.id.reader);
+//
+//        readerLayout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.e("click", "点击监听");
+//            }
+//        });
+//        ReaderAdapter adapter = new ReaderAdapter(word, title, author);
+//        readerLayout.setAdapter(adapter);
+//        readerLayout.setPage(NormalPage.class);
+        WriteView view = findViewById(R.id.view);
+        view.setData(word, title, author);
+        view.setIndex(1);
     }
 }

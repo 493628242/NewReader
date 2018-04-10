@@ -51,4 +51,12 @@ public class ReadView extends AppCompatTextView {
 		int topOfLastLine = getHeight() - getPaddingTop() - getPaddingBottom() - getLineHeight();
 		return layout.getLineForVertical(topOfLastLine);
 	}
+	/**
+	 * 获取当前页总行数
+	 */
+	public int getLineNum(int height) {
+		Layout layout = getLayout();
+		int topOfLastLine = getHeight() - getPaddingTop() - getPaddingBottom() - getLineHeight();
+		return layout.getLineForVertical(topOfLastLine);
+	}
 }
