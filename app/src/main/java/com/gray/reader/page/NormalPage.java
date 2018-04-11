@@ -5,10 +5,13 @@ import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
+import com.gray.reader.WriteView;
+import com.gray.reader.util.UIUtils;
+
 /**
  * @author wjy on 2018/4/8.
  */
-public class NormalPage extends BasePage {
+public class NormalPage extends WriteView implements IReaderPage {
     public NormalPage(Context context) {
         this(context, null);
     }
@@ -35,13 +38,13 @@ public class NormalPage extends BasePage {
     @Override
     public void previousToCurrent(float moveX, float moveY, float mMoveX) {
         //moveX一定>0
-        setTranslationX(0 - getDisplayWidth() + moveX);
+        setTranslationX(0 - UIUtils.getDisplayWidth(getContext()) + moveX);
     }
 
     @Override
     public void nextToCurrent(float moveX, float moveY, float mMoveX) {
         //moveX<0
-        setTranslationX(getDisplayWidth() + moveX);
+        setTranslationX(UIUtils.getDisplayWidth(getContext()) + moveX);
 
     }
 
@@ -49,7 +52,7 @@ public class NormalPage extends BasePage {
     public ObjectAnimator animCurrentToPrevious(float moveX, float moveY, float mMoveX) {
         return
                 ObjectAnimator.ofFloat(this, "translationX",
-                        mMoveX == 0 ? 0 : moveX, (float) (0 - getDisplayWidth()));
+                        mMoveX == 0 ? 0 : moveX, (float) (0 - UIUtils.getDisplayWidth(getContext())));
 //        objectAnimator.start();
     }
 
@@ -57,7 +60,7 @@ public class NormalPage extends BasePage {
     public ObjectAnimator animCurrentToNext(float moveX, float moveY, float mMoveX) {
         return
                 ObjectAnimator.ofFloat(this, "translationX",
-                        mMoveX == 0 ? 0 : moveX, (float) getDisplayWidth());
+                        mMoveX == 0 ? 0 : moveX, (float) UIUtils.getDisplayWidth(getContext()));
 //        objectAnimator.start();
     }
 
@@ -65,7 +68,7 @@ public class NormalPage extends BasePage {
     public ObjectAnimator animPreviousToCurrent(float moveX, float moveY, float mMoveX) {
         return
                 ObjectAnimator.ofFloat(this, "translationX",
-                        mMoveX == 0 ? 0 - getDisplayWidth() : (0 - getDisplayWidth() + moveX), 0);
+                        mMoveX == 0 ? 0 - UIUtils.getDisplayWidth(getContext()) : (0 - UIUtils.getDisplayWidth(getContext()) + moveX), 0);
 //        objectAnimator.start();
     }
 
@@ -73,7 +76,7 @@ public class NormalPage extends BasePage {
     public ObjectAnimator animNextToCurrent(float moveX, float moveY, float mMoveX) {
         return
                 ObjectAnimator.ofFloat(this, "translationX",
-                        mMoveX == 0 ? getDisplayWidth() : (getDisplayWidth() + moveX), 0);
+                        mMoveX == 0 ? UIUtils.getDisplayWidth(getContext()) : (UIUtils.getDisplayWidth(getContext()) + moveX), 0);
 //        objectAnimator.start();
     }
 

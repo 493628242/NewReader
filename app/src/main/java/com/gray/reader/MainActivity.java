@@ -5,8 +5,10 @@ import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import com.gray.reader.broadcast.BatteryReceiver;
+import com.gray.reader.page.NormalPage;
 
 public class MainActivity extends AppCompatActivity {
     String word = "　一夜，天还没亮，屋里漆黑一片，只有落地花罩外一盏小小的宫灯正发着微弱的黄光。\n" +
@@ -37,30 +39,30 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        ReaderLayout readerLayout = findViewById(R.id.reader);
-//
-//        readerLayout.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.e("click", "点击监听");
-//            }
-//        });
-//        ReaderAdapter adapter = new ReaderAdapter(word, title, author);
-//        readerLayout.setAdapter(adapter);
-//        readerLayout.setPage(NormalPage.class);
+        final ReaderLayout readerLayout = findViewById(R.id.reader);
+
+        readerLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e("click", "点击监听");
+            }
+        });
+        ReaderAdapter adapter = new ReaderAdapter(word, title, author);
+        readerLayout.setAdapter(adapter);
+        readerLayout.setPage(NormalPage.class);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
         receiver = new BatteryReceiver();
         registerReceiver(receiver, intentFilter);
 
-        final WriteView view = findViewById(R.id.view);
-        view.setData(word, title, author);
-        view.setIndex(2);
-        String a = "\n";
+//        String a = "\n";  final WriteView view = findViewById(R.id.view);
+//        view.setData(word, title, author);
+//        view.setIndex(2);
+
         receiver.setBatteryListener(new BatteryReceiver.BatteryListener() {
             @Override
             public void onListener(int level) {
-                view.setPower(level);
+                readerLayout.setPower(level);
             }
         });
     }
