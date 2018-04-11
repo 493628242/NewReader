@@ -13,6 +13,10 @@ import java.lang.ref.SoftReference;
  */
 public class SmallTitleElement extends Element {
     public static final int DEF_TEXT_SIZE = 11;
+    public static final int DEF_TEXT_COLOR = 0xFF999999;
+    private static int textSize = DEF_TEXT_SIZE;
+    private static int textColor = DEF_TEXT_COLOR;
+
     private String title;
 
     private SoftReference<Context> contextSoftReference;
@@ -25,8 +29,18 @@ public class SmallTitleElement extends Element {
 
     @Override
     public void draw(Canvas canvas, Paint paint) {
-        paint.setTextSize(UIUtils.dip2px(contextSoftReference.get(), DEF_TEXT_SIZE));
+        Context context = contextSoftReference.get();
+        paint.setTextSize(UIUtils.dip2px(context, DEF_TEXT_SIZE));
+        paint.setTextSize(UIUtils.dip2px(context, textSize));
+        paint.setColor(textColor);
         canvas.drawText(title, x, y, paint);
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

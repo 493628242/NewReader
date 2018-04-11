@@ -2,8 +2,12 @@ package com.gray.reader.element;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 
 import com.gray.reader.util.UIUtils;
 
@@ -15,29 +19,33 @@ import java.lang.ref.SoftReference;
 public class BigTitleElement extends Element {
     public static final int DEF_TEXT_SIZE = 25;//sp
     public static final int DEF_LINE_SPACE = 5;//sp
+    public static final int DEF_TEXT_COLOR = Color.BLACK;
+    private static int textSize = DEF_TEXT_SIZE;
+    private static int textColor = DEF_TEXT_COLOR;
     private String title;
-
     private SoftReference<Context> contextSoftReference;
 
     public BigTitleElement(Context context, String title) {
         contextSoftReference = new SoftReference<>(context);
         this.title = title;
-
     }
 
     @Override
     public void draw(Canvas canvas, Paint paint) {
+        Context context = contextSoftReference.get();
+        paint.setTextSize(UIUtils.dip2px(context, textSize));
+        paint.setColor(textColor);
         String[] split = title.split("\n");
-        paint.setTextSize(UIUtils.dip2px(contextSoftReference.get(), DEF_TEXT_SIZE));
-        int width = UIUtils.getDisplayWidth(contextSoftReference.get());
+        paint.setTextSize(UIUtils.dip2px(context, DEF_TEXT_SIZE));
+        paint.setTextAlign(Paint.Align.CENTER);
+        int width = UIUtils.getDisplayWidth(context);
+        Rect rect = new Rect();
         for (int i = 0; i < split.length; i++) {
-            Rect rect = new Rect();
             paint.getTextBounds(split[i], 0, split[i].length(), rect);
             int height = i * (rect.height()
-                    + UIUtils.dip2px(contextSoftReference.get(), DEF_LINE_SPACE));
-            y += height;
-            x = (int) ((width - paint.measureText(split[i])) / 2 + 0.5f);
-            canvas.drawText(title, x, y, paint);
+                    + UIUtils.dip2px(context, DEF_LINE_SPACE));
+            x = width / 2;
+            canvas.drawText(split[i], x, y + height, paint);
         }
     }
 

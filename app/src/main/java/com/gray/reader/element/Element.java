@@ -9,7 +9,7 @@ import android.graphics.Paint;
 public abstract class Element {
     public static final int PADDING_START = 15;
     public static final int PADDING_END = 15;
-    public static final int PADDING_BTOM = 15;
+    public static final int PADDING_BOTTOM = 15;
     public static final int PADDING_TOP = 15;
     protected int x;
     protected int y;
