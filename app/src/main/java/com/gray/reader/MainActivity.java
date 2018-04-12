@@ -32,24 +32,36 @@ public class MainActivity extends AppCompatActivity {
             "\n" +
             "　　架子床外值夜的丫鬟灵偃正在望着窗户发呆，听到银香球落地的声音，打了一个激\n";
     String title = "第3章 最长30字章节名称最长30字章节名称最长30字章节名称";
-    String author;
+    String author = "记得按时发几首歌罚款就是个示范岗后翻赶快来啦gals尬死了噶临时发发生\n"
+            + "　　萧源躺在柔软馨香的被褥里，隔着层层幔帐，隐约可见花罩外几名丫鬟仆妇正在给她熏衣，准备盥漱用具，" +
+            "房里安静的连窗外的落雪声都能隐约听见。屋里火墙烧的正暖，萧源翻了一个身，掀了掀被窝散了些热气，“骨碌”一声" +
+            "，熏被的银香球被她无意间踢了下，滚到了地上。\n" + "　　萧源躺在柔软馨香的被褥里，隔着层层幔帐，隐约可见花罩外几名丫鬟仆妇正在给她熏衣，准备盥漱用具，" +
+            "房里安静的连窗外的落雪声都能隐约听见。屋里火墙烧的正暖，萧源翻了一个身，掀了掀被窝散了些热气，“骨碌”一声" +
+            "，熏被的银香球被她无意间踢了下，滚到了地上。\n" + "　　萧源躺在柔软馨香的被褥里，隔着层层幔帐，隐约可见花罩外几名丫鬟仆妇正在给她熏衣，准备盥漱用具，" +
+            "房里安静的连窗外的落雪声都能隐约听见。屋里火墙烧的正暖，萧源翻了一个身，掀了掀被窝散了些热气，“骨碌”一声" +
+            "，熏被的银香球被她无意间踢了下，滚到了地上。\n" + "　　萧源躺在柔软馨香的被褥里，隔着层层幔帐，隐约可见花罩外几名丫鬟仆妇正在给她熏衣，准备盥漱用具，" +
+            "房里安静的连窗外的落雪声都能隐约听见。屋里火墙烧的正暖，萧源翻了一个身，掀了掀被窝散了些热气，“骨碌”一声" +
+            "，熏被的银香球被她无意间踢了下，滚到了地上。\n";
+    //            +"\n a";
     private BatteryReceiver receiver;
+    int i = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final ReaderLayout readerLayout = findViewById(R.id.reader);
-
         readerLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.e("click", "点击监听");
+
+                readerLayout.chooseMode(++i % 5);
             }
         });
-        ReaderAdapter adapter = new ReaderAdapter(word, title, author);
-        readerLayout.setAdapter(adapter);
+        readerLayout.setData(word, title, author);
         readerLayout.setPage(NormalPage.class);
+        readerLayout.setIndex(1);
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
         receiver = new BatteryReceiver();

@@ -20,8 +20,8 @@ public class BigTitleElement extends Element {
     public static final int DEF_TEXT_SIZE = 25;//sp
     public static final int DEF_LINE_SPACE = 5;//sp
     public static final int DEF_TEXT_COLOR = Color.BLACK;
-    private static int textSize = DEF_TEXT_SIZE;
-    private static int textColor = DEF_TEXT_COLOR;
+    private static int textSize;
+    private static int textColor;
     private String title;
     private SoftReference<Context> contextSoftReference;
 
@@ -33,10 +33,10 @@ public class BigTitleElement extends Element {
     @Override
     public void draw(Canvas canvas, Paint paint) {
         Context context = contextSoftReference.get();
-        paint.setTextSize(UIUtils.dip2px(context, textSize));
+        paint.setTextSize(textSize);
         paint.setColor(textColor);
         String[] split = title.split("\n");
-        paint.setTextSize(UIUtils.dip2px(context, DEF_TEXT_SIZE));
+        paint.setTextSize(textSize);
         paint.setTextAlign(Paint.Align.CENTER);
         int width = UIUtils.getDisplayWidth(context);
         Rect rect = new Rect();
@@ -49,5 +49,11 @@ public class BigTitleElement extends Element {
         }
     }
 
+    public static void setTextSize(int textSize) {
+        BigTitleElement.textSize = textSize;
+    }
 
+    public static void setTextColor(int textColor) {
+        BigTitleElement.textColor = textColor;
+    }
 }

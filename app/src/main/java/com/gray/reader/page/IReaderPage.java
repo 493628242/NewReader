@@ -7,24 +7,24 @@ import android.animation.ValueAnimator;
  */
 public interface IReaderPage {
     //当前页面向左移动
-    void currentToPrevious(float moveX, float moveY, float mMoveX);
+    void currentToPrevious(float changeX, float moveY, float moveX);
 
     //当前页面向右移动
-    void currentToNext(float moveX, float moveY, float mMoveX);
+    void currentToNext(float changeX, float moveY, float moveX);
 
-    void previousToCurrent(float moveX, float moveY, float mMoveX);
+    void previousToCurrent(float changeX, float moveY, float moveX);
 
-    void nextToCurrent(float moveX, float moveY, float mMoveX);
+    void nextToCurrent(float changeX, float moveY, float moveX);
 
     //当前页面向左移动 动画效果
-    ValueAnimator animCurrentToPrevious(float moveX, float moveY, float mMoveX);
+    ValueAnimator animCurrentToPrevious(float changeX, float moveY, float moveX);
 
     //当前页面向右移动
-    ValueAnimator animCurrentToNext(float moveX, float moveY, float mMoveX);
+    ValueAnimator animCurrentToNext(float changeX, float moveY, float moveX);
 
-    ValueAnimator animPreviousToCurrent(float moveX, float moveY, float mMoveX);
+    ValueAnimator animPreviousToCurrent(float changeX, float moveY, float moveX);
 
-    ValueAnimator animNextToCurrent(float moveX, float moveY, float mMoveX);
+    ValueAnimator animNextToCurrent(float changeX, float moveY, float moveX);
 
     void reset();
 }

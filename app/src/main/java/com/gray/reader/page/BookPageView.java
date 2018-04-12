@@ -868,38 +868,38 @@ public class BookPageView extends BasePage {
     }
 
     @Override
-    public void currentToPrevious(float moveX, float moveY, float mMoveX) {
+    public void currentToPrevious(float changeX, float moveY, float moveX) {
         if (mode == null || mode.isEmpty()) {
             mode = moveY > getDisplayHeight() / 2 ? STYLE_LOWER_RIGHT :
                     STYLE_TOP_RIGHT;
         }
-        setTouchPoint(mMoveX, moveY, mode);
+        setTouchPoint(moveX, moveY, mode);
     }
 
     @Override
-    public void currentToNext(float moveX, float moveY, float mMoveX) {
+    public void currentToNext(float changeX, float moveY, float moveX) {
         setX(0);
         setY(0);
     }
 
     @Override
-    public void previousToCurrent(float moveX, float moveY, float mMoveX) {
+    public void previousToCurrent(float changeX, float moveY, float moveX) {
         if (mode == null || mode.isEmpty()) {
             mode = moveY > getDisplayHeight() / 2 ? STYLE_LOWER_RIGHT :
                     STYLE_TOP_RIGHT;
         }
-        setTouchPoint(mMoveX, moveY, mode);
+        setTouchPoint(moveX, moveY, mode);
     }
 
     @Override
-    public void nextToCurrent(float moveX, float moveY, float mMoveX) {
+    public void nextToCurrent(float changeX, float moveY, float moveX) {
         setX(0);
         setY(0);
     }
 
     @Override
-    public ValueAnimator animCurrentToPrevious(float moveX, final float moveY, float mMoveX) {
-        ValueAnimator animator = ValueAnimator.ofFloat(mMoveX, 0 - getDisplayWidth());
+    public ValueAnimator animCurrentToPrevious(float changeX, final float moveY, float moveX) {
+        ValueAnimator animator = ValueAnimator.ofFloat(moveX, 0 - getDisplayWidth());
         animator.setDuration(5000);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -913,13 +913,13 @@ public class BookPageView extends BasePage {
     }
 
     @Override
-    public ValueAnimator animCurrentToNext(float moveX, final float moveY, float mMoveX) {
+    public ValueAnimator animCurrentToNext(float changeX, final float moveY, float moveX) {
         return ObjectAnimator.ofFloat(this, "translationX", 0, 0);
     }
 
     @Override
-    public ValueAnimator animPreviousToCurrent(float moveX, final float moveY, float mMoveX) {
-        ValueAnimator animator = ValueAnimator.ofFloat(mMoveX, getDisplayWidth());
+    public ValueAnimator animPreviousToCurrent(float changeX, final float moveY, float moveX) {
+        ValueAnimator animator = ValueAnimator.ofFloat(moveX, getDisplayWidth());
         animator.setDuration(5000);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -933,7 +933,7 @@ public class BookPageView extends BasePage {
     }
 
     @Override
-    public ValueAnimator animNextToCurrent(float moveX, float moveY, float mMoveX) {
+    public ValueAnimator animNextToCurrent(float changeX, float moveY, float moveX) {
         return ObjectAnimator.ofFloat(this, "translationX", 0, 0);
 
     }

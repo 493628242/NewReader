@@ -2,6 +2,7 @@ package com.gray.reader.page;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
@@ -26,57 +27,59 @@ public class NormalPage extends WriteView implements IReaderPage {
 
 
     @Override
-    public void currentToPrevious(float moveX, float moveY, float mMoveX) {
-        setTranslationX(moveX);
+    public void currentToPrevious(float changeX, float moveY, float moveX) {
+        setTranslationX(changeX);
     }
 
     @Override
-    public void currentToNext(float moveX, float moveY, float mMoveX) {
-        setTranslationX(moveX);
+    public void currentToNext(float changeX, float moveY, float moveX) {
+        setTranslationX(changeX);
     }
 
     @Override
-    public void previousToCurrent(float moveX, float moveY, float mMoveX) {
+    public void previousToCurrent(float changeX, float moveY, float moveX) {
         //moveX一定>0
-        setTranslationX(0 - UIUtils.getDisplayWidth(getContext()) + moveX);
+        setTranslationX(0 - UIUtils.getDisplayWidth(getContext()) + changeX);
     }
 
     @Override
-    public void nextToCurrent(float moveX, float moveY, float mMoveX) {
+    public void nextToCurrent(float changeX, float moveY, float moveX) {
         //moveX<0
-        setTranslationX(UIUtils.getDisplayWidth(getContext()) + moveX);
+        setTranslationX(UIUtils.getDisplayWidth(getContext()) + changeX);
 
     }
 
     @Override
-    public ObjectAnimator animCurrentToPrevious(float moveX, float moveY, float mMoveX) {
+    public ObjectAnimator animCurrentToPrevious(float changeX, float moveY, float moveX) {
         return
                 ObjectAnimator.ofFloat(this, "translationX",
-                        mMoveX == 0 ? 0 : moveX, (float) (0 - UIUtils.getDisplayWidth(getContext())));
+                        moveX == 0 ? 0 : changeX, (float) (0 - UIUtils.getDisplayWidth(getContext())));
 //        objectAnimator.start();
     }
 
     @Override
-    public ObjectAnimator animCurrentToNext(float moveX, float moveY, float mMoveX) {
+    public ObjectAnimator animCurrentToNext(float changeX, float moveY, float moveX) {
         return
                 ObjectAnimator.ofFloat(this, "translationX",
-                        mMoveX == 0 ? 0 : moveX, (float) UIUtils.getDisplayWidth(getContext()));
+                        moveX == 0 ? 0 : changeX, (float) UIUtils.getDisplayWidth(getContext()));
 //        objectAnimator.start();
     }
 
     @Override
-    public ObjectAnimator animPreviousToCurrent(float moveX, float moveY, float mMoveX) {
+    public ObjectAnimator animPreviousToCurrent(float changeX, float moveY, float moveX) {
         return
                 ObjectAnimator.ofFloat(this, "translationX",
-                        mMoveX == 0 ? 0 - UIUtils.getDisplayWidth(getContext()) : (0 - UIUtils.getDisplayWidth(getContext()) + moveX), 0);
+                        moveX == 0 ? 0 - UIUtils.getDisplayWidth(getContext())
+                                : (0 - UIUtils.getDisplayWidth(getContext()) + changeX), 0);
 //        objectAnimator.start();
     }
 
     @Override
-    public ObjectAnimator animNextToCurrent(float moveX, float moveY, float mMoveX) {
+    public ObjectAnimator animNextToCurrent(float changeX, float moveY, float moveX) {
         return
                 ObjectAnimator.ofFloat(this, "translationX",
-                        mMoveX == 0 ? UIUtils.getDisplayWidth(getContext()) : (UIUtils.getDisplayWidth(getContext()) + moveX), 0);
+                        moveX == 0 ? UIUtils.getDisplayWidth(getContext())
+                                : (UIUtils.getDisplayWidth(getContext()) + changeX), 0);
 //        objectAnimator.start();
     }
 

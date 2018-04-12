@@ -29,9 +29,7 @@ public class SmallTitleElement extends Element {
 
     @Override
     public void draw(Canvas canvas, Paint paint) {
-        Context context = contextSoftReference.get();
-        paint.setTextSize(UIUtils.dip2px(context, DEF_TEXT_SIZE));
-        paint.setTextSize(UIUtils.dip2px(context, textSize));
+        paint.setTextSize(textSize);
         paint.setColor(textColor);
         canvas.drawText(title, x, y, paint);
     }
@@ -42,5 +40,13 @@ public class SmallTitleElement extends Element {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public static void setTextSize(int textSize) {
+        SmallTitleElement.textSize = textSize;
+    }
+
+    public static void setTextColor(int textColor) {
+        SmallTitleElement.textColor = textColor;
     }
 }

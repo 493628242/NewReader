@@ -17,9 +17,17 @@ public class LineElement extends Element {
     public static final int DEF_LINE_SPACE = DEF_TEXT_SIZE - 6;
     public static final int DEF_TEXT_COLOR = Color.BLACK;
     private SoftReference<Context> contextSoftReference;
-    private static int textSize = DEF_TEXT_SIZE;
-    private static int textColor = DEF_TEXT_COLOR;
+    private int textSize = DEF_TEXT_SIZE;
+    private int textColor = DEF_TEXT_COLOR;
     private String content;
+
+    public void setTextSize(int textSize) {
+        this.textSize = textSize;
+    }
+
+    public void setTextColor(int textColor) {
+        this.textColor = textColor;
+    }
 
     public LineElement(Context context, String content) {
         contextSoftReference = new SoftReference<>(context);
@@ -28,8 +36,7 @@ public class LineElement extends Element {
 
     @Override
     public void draw(Canvas canvas, Paint paint) {
-        Context context = contextSoftReference.get();
-        paint.setTextSize(UIUtils.dip2px(context, textSize));
+        paint.setTextSize(textSize);
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setColor(textColor);
         canvas.drawText(content, x, y, paint);

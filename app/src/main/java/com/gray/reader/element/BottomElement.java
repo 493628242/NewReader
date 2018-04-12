@@ -11,7 +11,6 @@ import com.gray.reader.util.UIUtils;
 
 import java.lang.ref.SoftReference;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -31,9 +30,7 @@ public class BottomElement extends Element {
     private int batteryHeight;
     private float power;
     private int mMargin = 2;    //电池内芯与边框的距离
-    private int mBoder = 1;     //电池外框的宽
-    private int mHeadWidth = 6;
-    private int mHeadHeight = 10;
+    private int mBorder = 1;     //电池外框的宽
     private SimpleDateFormat format;
 
     public BottomElement(Context context) {
@@ -56,7 +53,7 @@ public class BottomElement extends Element {
     @Override
     public void draw(Canvas canvas, Paint paint) {
         Context context = contextSoftReference.get();
-        paint.setTextSize(UIUtils.dip2px(context, textSize));
+        paint.setTextSize(textSize);
         paint.setColor(textColor);
         x = UIUtils.dip2px(context, Element.PADDING_START);
         y = UIUtils.getDisplayHeight(context) - UIUtils.dip2px(context, Element.PADDING_BOTTOM);
@@ -66,8 +63,6 @@ public class BottomElement extends Element {
         x = UIUtils.getDisplayWidth(context) - UIUtils.dip2px(context, timeMargin);
         canvas.drawText(time, x, y, paint);
         drawBattery(canvas, paint);
-
-
     }
 
     public void setIndex(String index) {
@@ -81,7 +76,7 @@ public class BottomElement extends Element {
     private void drawBattery(Canvas canvas, Paint paint) {
         //画外框
         paint.setStyle(Paint.Style.STROKE);    //设置空心矩形
-        paint.setStrokeWidth(UIUtils.dip2px(contextSoftReference.get(), mBoder));          //设置边框宽度
+        paint.setStrokeWidth(UIUtils.dip2px(contextSoftReference.get(), mBorder));          //设置边框宽度
         paint.setColor(textColor);
         canvas.drawRoundRect(mMainRect, UIUtils.dip2px(contextSoftReference.get(), 1),
                 UIUtils.dip2px(contextSoftReference.get(), 1), paint);
@@ -98,27 +93,19 @@ public class BottomElement extends Element {
             paint.setColor(textColor);
         }
         int marginPX = UIUtils.dip2px(contextSoftReference.get(), mMargin);
-        int width = (int) ((1 - power) * (mMainRect.width()
-                - marginPX * 2));
         int left = (int) (mMainRect.left + marginPX);
-        int right = (int) ((mMainRect.right - marginPX) * power);
+        int right = (int) ((mMainRect.right - left - marginPX) * power) + left;
         int top = (int) (mMainRect.top + marginPX);
         int bottom = (int) (mMainRect.bottom - marginPX);
         Rect rect = new Rect(left, top, right, bottom);
         canvas.drawRect(rect, paint);
     }
 
-    public static int getTextSize() {
-        return textSize;
-    }
 
     public static void setTextSize(int textSize) {
         BottomElement.textSize = textSize;
     }
 
-    public static int getTextColor() {
-        return textColor;
-    }
 
     public static void setTextColor(int textColor) {
         BottomElement.textColor = textColor;
