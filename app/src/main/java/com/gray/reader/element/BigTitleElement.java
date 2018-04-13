@@ -9,6 +9,7 @@ import android.text.Layout;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 
+import com.gray.reader.ReaderLayout;
 import com.gray.reader.util.UIUtils;
 
 import java.lang.ref.SoftReference;
@@ -24,6 +25,7 @@ public class BigTitleElement extends Element {
     private static int textColor;
     private String title;
     private SoftReference<Context> contextSoftReference;
+    private static ReaderLayout.pageProperty pageProperty;
 
     public BigTitleElement(Context context, String title) {
         contextSoftReference = new SoftReference<>(context);
@@ -33,27 +35,23 @@ public class BigTitleElement extends Element {
     @Override
     public void draw(Canvas canvas, Paint paint) {
         Context context = contextSoftReference.get();
-        paint.setTextSize(textSize);
-        paint.setColor(textColor);
+        paint.setTextSize(pageProperty.bigTitleSize);
+        paint.setColor(pageProperty.textColor);
         String[] split = title.split("\n");
-        paint.setTextSize(textSize);
+        paint.setTextSize(pageProperty.bigTitleSize);
         paint.setTextAlign(Paint.Align.CENTER);
         int width = UIUtils.getDisplayWidth(context);
         Rect rect = new Rect();
         for (int i = 0; i < split.length; i++) {
             paint.getTextBounds(split[i], 0, split[i].length(), rect);
             int height = i * (rect.height()
-                    + UIUtils.dip2px(context, DEF_LINE_SPACE));
+                    + pageProperty.bigTitleLineSpace);
             x = width / 2;
             canvas.drawText(split[i], x, y + height, paint);
         }
     }
 
-    public static void setTextSize(int textSize) {
-        BigTitleElement.textSize = textSize;
-    }
-
-    public static void setTextColor(int textColor) {
-        BigTitleElement.textColor = textColor;
+    public static void setPageProperty(ReaderLayout.pageProperty pageProperty) {
+        BigTitleElement.pageProperty = pageProperty;
     }
 }

@@ -5,12 +5,17 @@ import android.content.IntentFilter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.PopupWindow;
 
 import com.gray.reader.broadcast.BatteryReceiver;
 import com.gray.reader.page.NormalPage;
+import com.gray.reader.util.UIUtils;
 
-public class MainActivity extends AppCompatActivity {
+public class ReaderActivity extends AppCompatActivity {
     String word = "　一夜，天还没亮，屋里漆黑一片，只有落地花罩外一盏小小的宫灯正发着微弱的黄光。\n" +
             "\n" +
             "　　\n" +
@@ -45,18 +50,40 @@ public class MainActivity extends AppCompatActivity {
     //            +"\n a";
     private BatteryReceiver receiver;
     int i = 0;
+    private ReaderLayout readerLayout;
+    private PopupBottom popupBottom;
+    private PopupTop popupTop;
+    private PopupRight popupRight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final ReaderLayout readerLayout = findViewById(R.id.reader);
+
+        popupBottom = new PopupBottom();
+        popupTop = new PopupTop();
+        popupRight = new PopupRight();
+        readerLayout = findViewById(R.id.reader);
         readerLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.e("click", "点击监听");
-
-                readerLayout.chooseMode(++i % 5);
+////                readerLayout.setTextSize(25);
+//                readerLayout.setLineSpace(++i%3);
+////                readerLayout.chooseMode(++i % 5);
+                if (popupTop.isShow()
+                        && popupBottom.isShow()
+                        && popupRight.isShow()) {
+                    popupTop.closePop();
+                    popupBottom.closePop();
+                    popupRight.closePop();
+                    setFullScreen(false);
+                } else {
+                    popupTop.showPop();
+                    popupBottom.showPop();
+                    popupRight.showPop();
+                    setFullScreen(true);
+                }
             }
         });
         readerLayout.setData(word, title, author);
@@ -66,11 +93,6 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
         receiver = new BatteryReceiver();
         registerReceiver(receiver, intentFilter);
-
-//        String a = "\n";  final WriteView view = findViewById(R.id.view);
-//        view.setData(word, title, author);
-//        view.setIndex(2);
-
         receiver.setBatteryListener(new BatteryReceiver.BatteryListener() {
             @Override
             public void onListener(int level) {
@@ -79,9 +101,144 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void setFullScreen(boolean isFullScreen) {
+        if (isFullScreen) {//设置为非全屏
+            WindowManager.LayoutParams lp = getWindow().getAttributes();
+            lp.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().setAttributes(lp);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        } else {//设置为全屏
+            WindowManager.LayoutParams lp = getWindow().getAttributes();
+            lp.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+            getWindow().setAttributes(lp);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
+    }
+
+    class PopupBottom {
+        PopupWindow popupWindow;
+
+        public PopupBottom() {
+            View view = LayoutInflater.from(ReaderActivity.this)
+                    .inflate(R.layout.pop_bottom, null);
+            popupWindow = new PopupWindow(view,
+                    UIUtils.getDisplayWidth(ReaderActivity.this),
+                    UIUtils.dip2px(ReaderActivity.this, 48));
+            popupWindow.setAnimationStyle(R.style.PopupBottomAnim);
+            // 设置PopupWindow是否能响应点击事件
+            popupWindow.setTouchable(true);
+        }
+
+        void showPop() {
+            popupWindow.showAtLocation(readerLayout, Gravity.BOTTOM, 0, 0);
+        }
+
+        boolean isShow() {
+            return popupWindow.isShowing();
+        }
+
+        void closePop() {
+            if (popupWindow != null) {
+                popupWindow.dismiss();
+            }
+        }
+
+        void destroy() {
+            popupWindow = null;
+        }
+    }
+
+    class PopupTop {
+        PopupWindow popupWindow;
+
+        public PopupTop() {
+            View view = LayoutInflater.from(ReaderActivity.this)
+                    .inflate(R.layout.pop_top, null);
+            popupWindow = new PopupWindow(view,
+                    UIUtils.getDisplayWidth(ReaderActivity.this),
+                    UIUtils.dip2px(ReaderActivity.this, 44)
+            );
+            popupWindow.setAnimationStyle(R.style.PopupTopAnim);
+            // 设置PopupWindow是否能响应点击事件
+            popupWindow.setTouchable(true);
+        }
+
+        void showPop() {
+            popupWindow.showAtLocation(readerLayout, Gravity.TOP, 0,
+                    UIUtils.getStatusBarHeight(ReaderActivity.this));
+        }
+
+        boolean isShow() {
+            return popupWindow.isShowing();
+        }
+
+        void closePop() {
+            if (popupWindow != null) {
+                popupWindow.dismiss();
+            }
+        }
+
+        void destroy() {
+            popupWindow = null;
+        }
+    }
+
+    class PopupRight {
+        PopupWindow popupWindow;
+
+        public PopupRight() {
+            View view = LayoutInflater.from(ReaderActivity.this)
+                    .inflate(R.layout.pop_right, null);
+            popupWindow = new PopupWindow(view,
+                    UIUtils.dip2px(ReaderActivity.this, 85),
+                    UIUtils.dip2px(ReaderActivity.this, 35));
+            popupWindow.setAnimationStyle(R.style.PopupRightAnim);
+            // 设置PopupWindow是否能响应点击事件
+            popupWindow.setTouchable(true);
+        }
+
+        void showPop() {
+            popupWindow.showAtLocation(readerLayout, Gravity.END | Gravity.TOP, 0,
+                    UIUtils.dip2px(ReaderActivity.this, 65)
+                            + UIUtils.getStatusBarHeight(ReaderActivity.this));
+        }
+
+        boolean isShow() {
+            return popupWindow.isShowing();
+        }
+
+        void closePop() {
+            if (popupWindow != null) {
+                popupWindow.dismiss();
+            }
+        }
+
+        void destroy() {
+            popupWindow = null;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (popupRight.isShow()
+                || popupBottom.isShow()
+                || popupTop.isShow()) {
+            popupRight.closePop();
+            popupTop.closePop();
+            popupBottom.closePop();
+            setFullScreen(false);
+        } else {
+            super.onBackPressed();
+
+        }
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        popupTop.destroy();
+        popupBottom.destroy();
+        popupRight.destroy();
         unregisterReceiver(receiver);
     }
 }

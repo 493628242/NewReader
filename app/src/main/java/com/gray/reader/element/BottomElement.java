@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
+import com.gray.reader.ReaderLayout;
 import com.gray.reader.util.UIUtils;
 
 import java.lang.ref.SoftReference;
@@ -32,6 +33,7 @@ public class BottomElement extends Element {
     private int mMargin = 2;    //电池内芯与边框的距离
     private int mBorder = 1;     //电池外框的宽
     private SimpleDateFormat format;
+    private static ReaderLayout.pageProperty pageProperty;
 
     public BottomElement(Context context) {
         contextSoftReference = new SoftReference<>(context);
@@ -53,8 +55,8 @@ public class BottomElement extends Element {
     @Override
     public void draw(Canvas canvas, Paint paint) {
         Context context = contextSoftReference.get();
-        paint.setTextSize(textSize);
-        paint.setColor(textColor);
+        paint.setTextSize(pageProperty.otherTextSize);
+        paint.setColor(pageProperty.otherTextColor);
         x = UIUtils.dip2px(context, Element.PADDING_START);
         y = UIUtils.getDisplayHeight(context) - UIUtils.dip2px(context, Element.PADDING_BOTTOM);
         canvas.drawText(index, x, y, paint);
@@ -77,20 +79,20 @@ public class BottomElement extends Element {
         //画外框
         paint.setStyle(Paint.Style.STROKE);    //设置空心矩形
         paint.setStrokeWidth(UIUtils.dip2px(contextSoftReference.get(), mBorder));          //设置边框宽度
-        paint.setColor(textColor);
+        paint.setColor(pageProperty.otherTextColor);
         canvas.drawRoundRect(mMainRect, UIUtils.dip2px(contextSoftReference.get(), 1),
                 UIUtils.dip2px(contextSoftReference.get(), 1), paint);
 
         //画电池头
         paint.setStyle(Paint.Style.FILL_AND_STROKE);  //实心
-        paint.setColor(textColor);
+        paint.setColor(pageProperty.otherTextColor);
         canvas.drawRoundRect(mHeadRect, UIUtils.dip2px(contextSoftReference.get(), 2),
                 UIUtils.dip2px(contextSoftReference.get(), 2), paint);
         //画电池芯
         if (power < 0.1) {
             paint.setColor(Color.RED);
         } else {
-            paint.setColor(textColor);
+            paint.setColor(pageProperty.otherTextColor);
         }
         int marginPX = UIUtils.dip2px(contextSoftReference.get(), mMargin);
         int left = (int) (mMainRect.left + marginPX);
@@ -101,13 +103,7 @@ public class BottomElement extends Element {
         canvas.drawRect(rect, paint);
     }
 
-
-    public static void setTextSize(int textSize) {
-        BottomElement.textSize = textSize;
-    }
-
-
-    public static void setTextColor(int textColor) {
-        BottomElement.textColor = textColor;
+    public static void setPageProperty(ReaderLayout.pageProperty pageProperty) {
+        BottomElement.pageProperty = pageProperty;
     }
 }

@@ -1,12 +1,33 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/bg_black</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="PopupBottomAnim">
+        <item name="android:windowEnterAnimation">@anim/bottom_enter</item>
+        <item name="android:windowExitAnimation">@anim/bottom_exit</item>
+    </style>
+
+    <style name="PopupTopAnim">
+        <item name="android:windowEnterAnimation">@anim/top_enter</item>
+        <item name="android:windowExitAnimation">@anim/top_exit</item>
+    </style>
+
+    <style name="PopupRightAnim">
+        <item name="android:windowEnterAnimation">@anim/right_enter</item>
+        <item name="android:windowExitAnimation">@anim/right_exit</item>
+    </style>
+
+    <style name="top_icon">
+        <item name="android:layout_marginStart">@dimen/icon_margin_start</item>
+        <item name="android:layout_width">@dimen/icon_width</item>
+        <item name="android:layout_height">@dimen/icon_height</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
+    </style>
 </resources>

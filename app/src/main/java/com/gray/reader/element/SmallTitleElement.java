@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
+import com.gray.reader.ReaderLayout;
 import com.gray.reader.util.UIUtils;
 
 import java.lang.ref.SoftReference;
@@ -18,19 +19,18 @@ public class SmallTitleElement extends Element {
     private static int textColor = DEF_TEXT_COLOR;
 
     private String title;
-
+    private static ReaderLayout.pageProperty pageProperty;
     private SoftReference<Context> contextSoftReference;
 
     public SmallTitleElement(Context context, String title) {
         contextSoftReference = new SoftReference<>(context);
         this.title = title;
-
     }
 
     @Override
     public void draw(Canvas canvas, Paint paint) {
-        paint.setTextSize(textSize);
-        paint.setColor(textColor);
+        paint.setTextSize(pageProperty.otherTextSize);
+        paint.setColor(pageProperty.otherTextColor);
         canvas.drawText(title, x, y, paint);
     }
 
@@ -42,11 +42,7 @@ public class SmallTitleElement extends Element {
         this.title = title;
     }
 
-    public static void setTextSize(int textSize) {
-        SmallTitleElement.textSize = textSize;
-    }
-
-    public static void setTextColor(int textColor) {
-        SmallTitleElement.textColor = textColor;
+    public static void setPageProperty(ReaderLayout.pageProperty pageProperty) {
+        SmallTitleElement.pageProperty = pageProperty;
     }
 }

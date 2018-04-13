@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="44dp"
+    android:background="@color/bg_black"
+    android:gravity="bottom"
+    android:orientation="horizontal"
+    android:paddingBottom="11dp"
+    android:paddingEnd="15dp"
+    android:paddingStart="15dp">
+
+    <ImageButton
+        android:id="@+id/img_back"
+        android:layout_width="@dimen/icon_width"
+        android:layout_height="@dimen/icon_height"
+        android:background="?android:attr/selectableItemBackground"
+        android:src="@drawable/nav_btn_back" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <ImageButton
+        android:id="@+id/img_recommend"
+        style="@style/top_icon"
+        android:src="@drawable/nav_btn_reader_recommend" />
+
+    <ImageButton
+        android:id="@+id/img_reward"
+        style="@style/top_icon"
+        android:src="@drawable/nav_btn_reader_reward" />
+
+    <ImageButton
+        android:id="@+id/img_ticket"
+        style="@style/top_icon"
+        android:src="@drawable/nav_btn_reader_ticket" />
+
+    <ImageButton
+        android:id="@+id/img_download"
+        style="@style/top_icon"
+        android:src="@drawable/nav_btn_reader_download" />
+
+    <ImageButton
+        android:id="@+id/img_more"
+        style="@style/top_icon"
+        android:src="@drawable/nav_btn_reader_more" />
+</LinearLayout>

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Reader</string>
+    <string name="add_bookshelf">加入书架</string>
 </resources>

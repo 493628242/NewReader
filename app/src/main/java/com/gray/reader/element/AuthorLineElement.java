@@ -6,39 +6,31 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.gray.reader.ReaderLayout;
-import com.gray.reader.util.UIUtils;
 
 import java.lang.ref.SoftReference;
 
 /**
- * @author wjy on 2018/4/10.
+ * @author wjy on 2018/4/12.
  */
-public class LineElement extends Element {
-    public static final int DEF_TEXT_SIZE = 18;
-    public static final int DEF_LINE_SPACE = DEF_TEXT_SIZE - 6;
-    public static final int DEF_TEXT_COLOR = Color.BLACK;
+public class AuthorLineElement extends Element {
     private SoftReference<Context> contextSoftReference;
-    private int textSize = DEF_TEXT_SIZE;
-    private int textColor = DEF_TEXT_COLOR;
     private String content;
-    private ReaderLayout.pageProperty pageProperty;
+    private static ReaderLayout.pageProperty pageProperty;
 
-    public void setPageProperty(ReaderLayout.pageProperty pageProperty) {
-        this.pageProperty = pageProperty;
+    public static void setPageProperty(ReaderLayout.pageProperty pageProperty) {
+        AuthorLineElement.pageProperty = pageProperty;
     }
 
-    public LineElement(Context context, String content) {
+    public AuthorLineElement(Context context, String content) {
         contextSoftReference = new SoftReference<>(context);
         this.content = content;
     }
 
     @Override
     public void draw(Canvas canvas, Paint paint) {
-        paint.setTextSize(pageProperty.textSize);
+        paint.setTextSize(pageProperty.authorTextSize);
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setColor(pageProperty.textColor);
         canvas.drawText(content, x, y, paint);
     }
-
-
 }

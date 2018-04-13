@@ -16,6 +16,7 @@ import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
 import com.gray.reader.element.AuthorHeadElement;
+import com.gray.reader.element.AuthorLineElement;
 import com.gray.reader.element.BigTitleElement;
 import com.gray.reader.element.BottomElement;
 import com.gray.reader.element.Element;
@@ -49,9 +50,7 @@ public class ReaderLayout extends FrameLayout {
     private IReaderPage previousPage;
     private IReaderPage nextPage;
     //当前页数
-    private volatile int index = 1;
-    private volatile int maxIndex;
-    private ReaderAdapter adapter;
+    private int index = 1;
     private boolean animStatus1 = false;
     private boolean animStatus2 = false;
     private Paint paint;
@@ -64,6 +63,10 @@ public class ReaderLayout extends FrameLayout {
     public static final int TYPE_GREEN = 2;
     public static final int TYPE_PINK = 3;
     public static final int TYPE_BlACK = 4;
+
+    public static final int LINE_SPACE_NORMAL = 0;
+    public static final int LINE_SPACE_MEDIUM = 1;
+    public static final int LINE_SPACE_WIDE = 2;
 
     public ReaderLayout(@NonNull Context context) {
         this(context, null);
@@ -83,12 +86,10 @@ public class ReaderLayout extends FrameLayout {
         paint = new Paint();
         paint.setAntiAlias(true);
         pageProperty = new pageProperty();
+        WriteView.setPageProperty(pageProperty);
         animController = new PageAnimController();
     }
 
-//    public void setAdapter(ReaderAdapter adapter) {
-//        this.adapter = adapter;
-//    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -143,7 +144,6 @@ public class ReaderLayout extends FrameLayout {
     public void setData(String word, String title, String author) {
         pageData = new PageData(word, title, author);
         resetPaint();
-        maxIndex = pageData.getCount();
     }
 
     public void setPower(int level) {
@@ -160,6 +160,69 @@ public class ReaderLayout extends FrameLayout {
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setStyle(Paint.Style.FILL);
         paint.setAntiAlias(true);
+    }
+
+    public void setLineSpace(int lineSpace) {
+        int readWordNum = getHasReadNum();
+        int defLineSpace = pageProperty.textSize - UIUtils.dip2px(getContext(), 6);
+        switch (lineSpace) {
+            case LINE_SPACE_NORMAL:
+                pageProperty.lineSpace = defLineSpace;
+                break;
+            case LINE_SPACE_MEDIUM:
+                pageProperty.lineSpace = (int) (defLineSpace * 1.4f);
+                break;
+            case LINE_SPACE_WIDE:
+                pageProperty.lineSpace = defLineSpace * 2;
+                break;
+        }
+        reLoadPage(readWordNum);
+    }
+
+    //值为dp
+    public void setTextSize(int textSize) {
+        int readWordNum = getHasReadNum();
+        pageProperty.textSize = UIUtils.dip2px(getContext(), textSize);
+        pageProperty.lineSpace = UIUtils.dip2px(getContext(), textSize - 6);
+        reLoadPage(readWordNum);
+    }
+
+    public void chooseMode(int mode) {
+        switch (mode) {
+            case TYPE_NORMAL:
+                pageProperty.setNormal();
+                break;
+            case TYPE_PROTECT_EYE:
+                pageProperty.setProtectEye();
+                break;
+            case TYPE_GREEN:
+                pageProperty.setGreen();
+                break;
+            case TYPE_PINK:
+                pageProperty.setPink();
+                break;
+            case TYPE_BlACK:
+                pageProperty.setBlack();
+                break;
+        }
+        notifyData();
+    }
+
+    private void notifyData() {
+        ((View) currentPage).postInvalidate();
+        ((View) nextPage).postInvalidate();
+        ((View) previousPage).postInvalidate();
+    }
+
+    public int getHasReadNum() {
+        int readWordNum = 0;
+        ArrayList<Integer> pageNum = pageData.pageNum;
+        for (int i = 0; i < index - 1; i++) {
+            readWordNum += pageNum.get(i);
+
+        }
+        Log.e("aaaa", readWordNum + "!");
+        return readWordNum;
     }
 
     //创建页面
@@ -182,13 +245,8 @@ public class ReaderLayout extends FrameLayout {
             ((View) previousPage).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
-                    if (pageData != null && index > 1) {
-                        ArrayList<Element> page = pageData.getPage(index - 1);
-                        ((WriteView) previousPage).setIndex(index - 1);
-                        ((WriteView) previousPage).setCount(pageData.getCount());
-                        ((WriteView) previousPage).setPage(page);
-                        ((WriteView) previousPage).setPower(pageProperty.power);
-                        ((WriteView) previousPage).notifyData();
+                    if (pageData != null && pageData.getCount() != 0 && index > 1) {
+                        setPageData(previousPage, index - 1);
                     }
                     ((View) previousPage).getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
@@ -197,14 +255,8 @@ public class ReaderLayout extends FrameLayout {
             ((View) currentPage).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
-                    if (pageData != null) {
-                        ArrayList<Element> page = pageData.getPage(index);
-
-                        ((WriteView) currentPage).setIndex(index);
-                        ((WriteView) currentPage).setCount(pageData.getCount());
-                        ((WriteView) currentPage).setPage(page);
-                        ((WriteView) currentPage).setPower(pageProperty.power);
-                        ((WriteView) currentPage).notifyData();
+                    if (pageData != null && pageData.getCount() != 0) {
+                        setPageData(currentPage, index);
                     }
                     ((View) currentPage).getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
@@ -212,13 +264,8 @@ public class ReaderLayout extends FrameLayout {
             ((View) nextPage).getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
-                    if (pageData != null && pageData.getCount() > index) {
-                        ArrayList<Element> page = pageData.getPage(index + 1);
-                        ((WriteView) nextPage).setIndex(index + 1);
-                        ((WriteView) nextPage).setCount(pageData.getCount());
-                        ((WriteView) nextPage).setPage(page);
-                        ((WriteView) nextPage).setPower(pageProperty.power);
-                        ((WriteView) nextPage).notifyData();
+                    if (pageData != null && pageData.getCount() != 0 && pageData.getCount() > index) {
+                        setPageData(nextPage, index + 1);
                     }
                     ((View) nextPage).getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
@@ -234,47 +281,57 @@ public class ReaderLayout extends FrameLayout {
         }
     }
 
-    public void chooseMode(int mode) {
-        switch (mode) {
-            case TYPE_NORMAL:
-                pageProperty.setNormal();
-                break;
-            case TYPE_PROTECT_EYE:
-                pageProperty.setProtectEye();
-                break;
-            case TYPE_GREEN:
-                pageProperty.setGreen();
-                break;
-            case TYPE_PINK:
-                pageProperty.setPink();
-                break;
-            case TYPE_BlACK:
-                pageProperty.setBlack();
-                break;
-        }
+    //设置页面的数据
+    private void setPageData(IReaderPage readerPage, int index) {
+        if (pageData == null || pageData.getCount() == 0 || index < 1 || index > pageData.getCount())
+            return;
+        ArrayList<Element> page = pageData.getPage(index);
+        ((WriteView) readerPage).setIndex(index);
+        ((WriteView) readerPage).setCount(pageData.getCount());
+        ((WriteView) readerPage).setPage(page);
+        ((WriteView) readerPage).setPower(pageProperty.power);
+        ((WriteView) readerPage).notifyData();
+    }
+
+    public ReaderLayout.pageProperty getPageProperty() {
+        return pageProperty;
+    }
+
+
+    private void reLoadPage(int readWordNum) {
+        Log.e("aaa", readWordNum + "&");
         pageData.rePaging();
-        ((View) currentPage).postInvalidate();
-        ((View) nextPage).postInvalidate();
-        ((View) nextPage).postInvalidate();
+        ArrayList<Integer> pageNum = pageData.pageNum;
+        Log.e("aaa", pageNum.size() + "^");
+        for (int i = 0; i < pageNum.size(); i++) {
+            readWordNum -= pageNum.get(i);
+            if (readWordNum < 0) {
+                index = i + 1;
+                break;
+            }
+        }
+        Log.e("aaa", index + "@");
+        setPageData(currentPage, index);
+        setPageData(previousPage, index - 1);
+        setPageData(nextPage, index + 1);
     }
 
     class PageData {
-        private String word;
-        private String title;
-        private String author;
-        private ArrayList<ArrayList<Element>> elementList;
-        private boolean calOver;
-        private String unCal;
-        private String unCalAuthor;
+        String word;
+        String title;
+        String author;
+        ArrayList<ArrayList<Element>> elementList;
+        boolean calOver;
+        String unCal;
+        String unCalAuthor;
         boolean authorOver = false;
-        private ArrayList<Integer> pageNum;
+        ArrayList<Integer> pageNum;
+        int pageWordNum = 0;
 
         PageData(String word, String title, String author) {
             this.word = word;
             this.title = title;
             this.author = author;
-            Log.e("aaa", author);
-            Log.e("aaaa", word);
             int i = word.lastIndexOf("\n");
             if (i != word.length() - 1) {
                 word += "\n";
@@ -297,13 +354,13 @@ public class ReaderLayout extends FrameLayout {
             while (!calOver
                     || !authorOver
                     ) {
+                pageWordNum = 0;
                 ArrayList<Element> elements = new ArrayList<>();
                 //已经使用的高度
                 int hasUsedHeight = UIUtils.dip2px(getContext(), Element.PADDING_TOP);
                 //小标题
                 SmallTitleElement smallTitleElement = getSmallTitleElement();
-                SmallTitleElement.setTextColor(pageProperty.otherTextColor);
-                SmallTitleElement.setTextSize(pageProperty.otherTextSize);
+                SmallTitleElement.setPageProperty(pageProperty);
                 elements.add(smallTitleElement);
                 String smallTitleUsefulString = smallTitleElement.getTitle();
                 paint.getTextBounds(smallTitleElement.getTitle(), 0, smallTitleUsefulString.length(),
@@ -316,8 +373,7 @@ public class ReaderLayout extends FrameLayout {
                     paint.setTextSize(pageProperty.bigTitleSize);
                     BigTitleElement bigTitleElement = new BigTitleElement(getContext(),
                             getBigTitleUsefulString(title));
-                    BigTitleElement.setTextColor(pageProperty.textColor);
-                    BigTitleElement.setTextSize(pageProperty.bigTitleSize);
+                    BigTitleElement.setPageProperty(pageProperty);
                     elements.add(bigTitleElement);
                     String bigTitleUsefulString = getBigTitleUsefulString(title);
                     String[] split = bigTitleUsefulString.split("\n");
@@ -343,23 +399,24 @@ public class ReaderLayout extends FrameLayout {
                     if (!hasDrawAuthorHead && authorCanUseHeight > pageProperty.authorHeadHeight) {
                         AuthorHeadElement authorHeadElement =
                                 new AuthorHeadElement(getContext());
-                        authorHeadElement.setTextColor(pageProperty.textColor);
+                        AuthorHeadElement.setPageProperty(pageProperty);
                         authorHeadElement.setY(hasUsedHeight + pageProperty.authorContentSpace);
                         elements.add(authorHeadElement);
                         hasDrawAuthorHead = true;
                         hasUsedHeight += pageProperty.authorHeadHeight;
                     }
-                    writeAuthor(rect, elements, hasUsedHeight);
                     //加载作者的话的内容 逻辑应和加载正文逻辑一致
+                    writeAuthor(rect, elements, hasUsedHeight);
+
                 }
+                pageNum.add(pageWordNum);
             }
             //分页完成后统一添加底部
             int count = elementList.size();
 
             for (ArrayList<Element> elements : elementList) {
                 BottomElement bottomElement = new BottomElement(getContext());
-                BottomElement.setTextColor(pageProperty.otherTextColor);
-                BottomElement.setTextSize(pageProperty.otherTextSize);
+                BottomElement.setPageProperty(pageProperty);
                 bottomElement.setIndex(index + "/" + count);
                 bottomElement.setPower(pageProperty.power);
                 elements.add(bottomElement);
@@ -370,6 +427,10 @@ public class ReaderLayout extends FrameLayout {
             unCal = word;
             unCalAuthor = author;
             elementList.clear();
+            pageNum.clear();
+            calOver = false;
+            authorOver = false;
+            paging();
         }
 
         private int writeContent(Rect rect, ArrayList<Element> elements, int hasUsedHeight) {
@@ -398,8 +459,7 @@ public class ReaderLayout extends FrameLayout {
                         paint.getTextBounds(lineUsefulString, 0,
                                 lineUsefulString.length(), rect);
                         hasUsedHeight += rect.height();
-                        lineElement.setTextColor(pageProperty.textColor);
-                        lineElement.setTextSize(pageProperty.textSize);
+                        lineElement.setPageProperty(pageProperty);
                         lineElement.setX(UIUtils.dip2px(getContext(), Element.PADDING_START));
                         lineElement.setY(hasUsedHeight);
                         contentHeight += rect.height();
@@ -422,7 +482,7 @@ public class ReaderLayout extends FrameLayout {
                     wordNum++;//加上换行符
                 }
 
-                pageNum.add(wordNum);
+                pageWordNum += wordNum;
                 unCal = unCal.substring(wordNum, unCal.length());
                 elements.addAll(lineElements);
             }
@@ -448,7 +508,7 @@ public class ReaderLayout extends FrameLayout {
                     - pageProperty.contentMarginBottom;
             paint.setTextSize(pageProperty.authorTextSize);
             String[] split = unCalAuthor.split("\n");//分段
-            ArrayList<LineElement> lineElements = new ArrayList<>();//临时空间用于储存行
+            ArrayList<AuthorLineElement> authorLineElements = new ArrayList<>();//临时空间用于储存行
             int wordNum = 0;
             for (String aSplit : split) {
                 String paragraph = aSplit;
@@ -457,20 +517,20 @@ public class ReaderLayout extends FrameLayout {
                     hasUsedHeight += pageProperty.authorLineSpace;
                     contentHeight += pageProperty.authorLineSpace;
                     String lineUsefulString = getLineUsefulString(paragraph);
-                    LineElement lineElement = new LineElement(getContext(), lineUsefulString);
+                    AuthorLineElement authorLineElement =
+                            new AuthorLineElement(getContext(), lineUsefulString);
                     paint.getTextBounds(lineUsefulString, 0,
                             lineUsefulString.length(), rect);
                     hasUsedHeight += rect.height();
-                    lineElement.setTextColor(pageProperty.textColor);
-                    lineElement.setTextSize(pageProperty.authorTextSize);
-                    lineElement.setX(UIUtils.dip2px(getContext(), Element.PADDING_START));
-                    lineElement.setY(hasUsedHeight);
+                    AuthorLineElement.setPageProperty(pageProperty);
+                    authorLineElement.setX(UIUtils.dip2px(getContext(), Element.PADDING_START));
+                    authorLineElement.setY(hasUsedHeight);
                     contentHeight += rect.height();
                     if (contentHeight > surplusHeight) {
                         pageOver = true;
                         break;
                     } else {
-                        lineElements.add(lineElement);
+                        authorLineElements.add(authorLineElement);
                         wordNum += lineUsefulString.length();
                     }
                     paragraph = paragraph.substring(lineUsefulString.length(), paragraph.length());
@@ -484,9 +544,9 @@ public class ReaderLayout extends FrameLayout {
                 }
                 wordNum++;//加上换行符
             }
-            pageNum.add(wordNum);
+            pageWordNum += wordNum;
             unCalAuthor = unCalAuthor.substring(wordNum, unCalAuthor.length());
-            elements.addAll(lineElements);
+            elements.addAll(authorLineElements);
             if (unCalAuthor == null || unCalAuthor.isEmpty()) {
                 authorOver = true;
             }
@@ -674,12 +734,7 @@ public class ReaderLayout extends FrameLayout {
             nextPage = pages.getLast();
             --index;
             if (pageData != null && 1 != index) {
-                ArrayList<Element> page = pageData.getPage(index - 1);
-                ((WriteView) previousPage).setIndex(index - 1);
-                ((WriteView) previousPage).setCount(pageData.getCount());
-                ((WriteView) previousPage).setPage(page);
-                ((WriteView) previousPage).setPower(pageProperty.power);
-                ((WriteView) previousPage).notifyData();
+                setPageData(previousPage, index - 1);
             }
             currentPage.reset();
             ((View) currentPage).bringToFront();
@@ -693,12 +748,7 @@ public class ReaderLayout extends FrameLayout {
             nextPage = pages.getLast();
             ++index;
             if (pageData != null && pageData.getCount() > index) {
-                ArrayList<Element> page = pageData.getPage(index + 1);
-                ((WriteView) nextPage).setIndex(index + 1);
-                ((WriteView) nextPage).setCount(pageData.getCount());
-                ((WriteView) nextPage).setPage(page);
-                ((WriteView) nextPage).setPower(pageProperty.power);
-                ((WriteView) nextPage).notifyData();
+                setPageData(nextPage, index + 1);
             }
 
             currentPage.reset();
@@ -708,22 +758,22 @@ public class ReaderLayout extends FrameLayout {
 
     }
 
-    class pageProperty {
-        int textSize = UIUtils.dip2px(getContext(), LineElement.DEF_TEXT_SIZE);
-        int lineSpace = UIUtils.dip2px(getContext(), LineElement.DEF_TEXT_SIZE);
-        int otherTextSize = UIUtils.dip2px(getContext(), SmallTitleElement.DEF_TEXT_SIZE);
-        int otherTextColor = 0xFF999999;
-        int bigTitleSize = UIUtils.dip2px(getContext(), BigTitleElement.DEF_TEXT_SIZE);
-        int bigTitleLineSpace = UIUtils.dip2px(getContext(), BigTitleElement.DEF_LINE_SPACE);
-        int textColor = LineElement.DEF_TEXT_COLOR;
-        int bgColor = Color.WHITE;
-        float power = 0.5f;
-        int contentMarginBottom = UIUtils.dip2px(getContext(), 38);
-        int authorHeadHeight = UIUtils.dip2px(getContext(), AuthorHeadElement.DEF_HEAD_HEIGHT);
-        int authorContentSpace = UIUtils.dip2px(getContext(), 40);
-        int authorHeadContentSpace = UIUtils.dip2px(getContext(), 30);
-        int authorLineSpace = UIUtils.dip2px(getContext(), 5);
-        int authorTextSize = UIUtils.dip2px(getContext(), 15);
+    public class pageProperty {
+        public int textSize = UIUtils.dip2px(getContext(), LineElement.DEF_TEXT_SIZE);
+        public int lineSpace = UIUtils.dip2px(getContext(), LineElement.DEF_TEXT_SIZE - 6);
+        public int otherTextSize = UIUtils.dip2px(getContext(), SmallTitleElement.DEF_TEXT_SIZE);
+        public int otherTextColor = 0xFF999999;
+        public int bigTitleSize = UIUtils.dip2px(getContext(), BigTitleElement.DEF_TEXT_SIZE);
+        public int bigTitleLineSpace = UIUtils.dip2px(getContext(), BigTitleElement.DEF_LINE_SPACE);
+        public int textColor = LineElement.DEF_TEXT_COLOR;
+        public int bgColor = Color.WHITE;
+        public float power = 0.5f;
+        public int contentMarginBottom = UIUtils.dip2px(getContext(), 38);
+        public int authorHeadHeight = UIUtils.dip2px(getContext(), AuthorHeadElement.DEF_HEAD_HEIGHT);
+        public int authorContentSpace = UIUtils.dip2px(getContext(), 40);
+        public int authorHeadContentSpace = UIUtils.dip2px(getContext(), 30);
+        public int authorLineSpace = UIUtils.dip2px(getContext(), 5);
+        public int authorTextSize = UIUtils.dip2px(getContext(), 15);
 
         public void setNormal() {
             pageProperty.bgColor = Color.WHITE;
@@ -733,7 +783,7 @@ public class ReaderLayout extends FrameLayout {
 
         public void setProtectEye() {
             pageProperty.bgColor = 0xFFFBF0D9;
-            pageProperty.textColor = 0xFFFBF0D9;
+            pageProperty.textColor = 0xFF5F4B32;
             pageProperty.otherTextColor = 0xFFBDAE96;
         }
 
@@ -751,7 +801,7 @@ public class ReaderLayout extends FrameLayout {
 
         public void setBlack() {
             pageProperty.bgColor = 0xFF2C2C2C;
-            pageProperty.textColor = 0xFF2C2C2C;
+            pageProperty.textColor = 0xFF94928E;
             pageProperty.otherTextColor = 0xFF999999;
         }
     }

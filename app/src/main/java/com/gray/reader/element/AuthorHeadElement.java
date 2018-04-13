@@ -12,6 +12,7 @@ import android.graphics.RectF;
 import android.util.Log;
 
 import com.gray.reader.R;
+import com.gray.reader.ReaderLayout;
 import com.gray.reader.util.UIUtils;
 
 import java.lang.ref.SoftReference;
@@ -21,7 +22,7 @@ import java.lang.ref.SoftReference;
  */
 public class AuthorHeadElement extends Element {
     public static final int DEF_HEAD_HEIGHT = 105;
-    private int textColor = Color.BLACK;
+    private static ReaderLayout.pageProperty pageProperty;
     private int textSize;//sp
     private SoftReference<Context> contextSoftReference;
     private static Bitmap bitmap;
@@ -54,7 +55,7 @@ public class AuthorHeadElement extends Element {
         rectF.bottom += y;
         canvas.drawBitmap(bitmap, null, rectF, paint);
         paint.setTextAlign(Paint.Align.CENTER);
-        paint.setColor(textColor);
+        paint.setColor(pageProperty.textColor);
         paint.setTextSize(textSize);
         int tX = width / 2;
         int tY = (int) (rectF.bottom + UIUtils.dip2px(context, imgTitleSpace) + textSize);
@@ -73,7 +74,8 @@ public class AuthorHeadElement extends Element {
 
     }
 
-    public void setTextColor(int textColor) {
-        this.textColor = textColor;
+    public static void setPageProperty(ReaderLayout.pageProperty pageProperty) {
+        AuthorHeadElement.pageProperty = pageProperty;
     }
+
 }

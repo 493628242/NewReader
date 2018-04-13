@@ -33,6 +33,7 @@ public class WriteView extends View {
     protected int count;
     protected int index;
     protected float power;
+    protected static ReaderLayout.pageProperty pageProperty;
 
     public WriteView(Context context) {
         this(context, null);
@@ -45,6 +46,10 @@ public class WriteView extends View {
     public WriteView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
+    }
+
+    public static void setPageProperty(ReaderLayout.pageProperty pageProperty) {
+        WriteView.pageProperty = pageProperty;
     }
 
     private void init() {
@@ -76,7 +81,7 @@ public class WriteView extends View {
 
     @Override
     protected void onDraw(Canvas canvas) {
-        canvas.drawColor(Color.WHITE);
+        canvas.drawColor(pageProperty.bgColor);
         if (page == null) {
             return;
         }
