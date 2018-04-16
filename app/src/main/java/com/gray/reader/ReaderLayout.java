@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -68,6 +69,8 @@ public class ReaderLayout extends FrameLayout {
     public static final int LINE_SPACE_MEDIUM = 1;
     public static final int LINE_SPACE_WIDE = 2;
 
+    private boolean isShowPop = false;
+
     public ReaderLayout(@NonNull Context context) {
         this(context, null);
     }
@@ -90,6 +93,13 @@ public class ReaderLayout extends FrameLayout {
         animController = new PageAnimController();
     }
 
+    public boolean isShowPop() {
+        return isShowPop;
+    }
+
+    public void setShowPop(boolean showPop) {
+        isShowPop = showPop;
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -102,19 +112,26 @@ public class ReaderLayout extends FrameLayout {
                     Log.e("downX", downX + "_");
                     return true;
                 case MotionEvent.ACTION_MOVE:
-                    mMoveX = event.getX();
-                    mMoveY = event.getY();
-                    animController.childMove(mMoveX - downX, mMoveY, mMoveX);
+                    if (!isShowPop) {
+                        mMoveX = event.getX();
+                        mMoveY = event.getY();
+                        animController.childMove(mMoveX - downX, mMoveY, mMoveX);
+                    }
                     return true;
                 case MotionEvent.ACTION_UP:
                     float changeX = mMoveX - downX;
                     if (mMoveX != 0 && Math.abs(changeX) > minMove) {
+
                         if (changeX < 0) {
                             animController.moveToNext(changeX, mMoveY, mMoveX);
                         } else {
                             animController.moveToPrevious(changeX, mMoveY, mMoveX);
                         }
                     } else {
+                        //当pop显示时无论点击何处都是关闭pop
+                        if (isShowPop) {
+                            return performClick();
+                        }
                         int widthPer3 = getDisplayWidth() / 3;
                         if (downX < widthPer3) {
                             Log.e("AA", "上翻页");
@@ -144,6 +161,14 @@ public class ReaderLayout extends FrameLayout {
     public void setData(String word, String title, String author) {
         pageData = new PageData(word, title, author);
         resetPaint();
+    }
+
+    public void paging() {
+        pageData.paging();
+    }
+
+    public void AsyncPaging(AsyncPagingListener listener) {
+        pageData.AsyncPaging(listener);
     }
 
     public void setPower(int level) {
@@ -208,7 +233,7 @@ public class ReaderLayout extends FrameLayout {
         notifyData();
     }
 
-    private void notifyData() {
+    public void notifyData() {
         ((View) currentPage).postInvalidate();
         ((View) nextPage).postInvalidate();
         ((View) previousPage).postInvalidate();
@@ -221,7 +246,6 @@ public class ReaderLayout extends FrameLayout {
             readWordNum += pageNum.get(i);
 
         }
-        Log.e("aaaa", readWordNum + "!");
         return readWordNum;
     }
 
@@ -297,12 +321,24 @@ public class ReaderLayout extends FrameLayout {
         return pageProperty;
     }
 
+    /**
+     * 在异步加载完成后调用
+     */
+    public void loadData() {
+        if (pageData != null && pageData.getCount() != 0 && index > 1) {
+            setPageData(previousPage, index - 1);
+        }
+        if (pageData != null && pageData.getCount() != 0) {
+            setPageData(currentPage, index);
+        }
+        if (pageData != null && pageData.getCount() != 0 && pageData.getCount() > index) {
+            setPageData(nextPage, index + 1);
+        }
+    }
 
     private void reLoadPage(int readWordNum) {
-        Log.e("aaa", readWordNum + "&");
         pageData.rePaging();
         ArrayList<Integer> pageNum = pageData.pageNum;
-        Log.e("aaa", pageNum.size() + "^");
         for (int i = 0; i < pageNum.size(); i++) {
             readWordNum -= pageNum.get(i);
             if (readWordNum < 0) {
@@ -327,6 +363,7 @@ public class ReaderLayout extends FrameLayout {
         boolean authorOver = false;
         ArrayList<Integer> pageNum;
         int pageWordNum = 0;
+        AsyncPagingListener listener;
 
         PageData(String word, String title, String author) {
             this.word = word;
@@ -344,7 +381,6 @@ public class ReaderLayout extends FrameLayout {
             unCalAuthor = author;
             elementList = new ArrayList<>();
             pageNum = new ArrayList<>();
-            paging();
         }
 
         //进行分页操作
@@ -421,6 +457,11 @@ public class ReaderLayout extends FrameLayout {
                 bottomElement.setPower(pageProperty.power);
                 elements.add(bottomElement);
             }
+        }
+
+        void AsyncPaging(AsyncPagingListener listener) {
+            this.listener = listener;
+            new AsyncPaging().execute();
         }
 
         void rePaging() {
@@ -623,6 +664,23 @@ public class ReaderLayout extends FrameLayout {
             usefulString = string.substring(0, length);
             return usefulString;
         }
+
+        class AsyncPaging extends AsyncTask<Void, Void, Void> {
+
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                paging();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if (listener != null) {
+                    listener.onFinishListener();
+                }
+            }
+        }
     }
 
     class PageAnimController {
@@ -813,4 +871,18 @@ public class ReaderLayout extends FrameLayout {
     private int getDisplayHeight() {
         return getResources().getDisplayMetrics().heightPixels;
     }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        pageProperty = null;
+        pageData = null;
+        animController = null;
+    }
+
+    interface AsyncPagingListener {
+        void onFinishListener();
+    }
+
+
 }

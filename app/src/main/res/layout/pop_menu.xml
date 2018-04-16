@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="270dp"
+    android:alpha="0.6"
+    android:minWidth="170dp"
+    android:orientation="vertical">
+
+    <CheckBox
+        android:id="@+id/tv_auto_buy"
+        style="@style/pop_menu"
+        android:button="@null"
+        android:drawableEnd="@drawable/selector_auto_buy"
+        android:drawablePadding="11dp"
+        android:text="@string/auto_buy" />
+
+    <TextView
+        android:id="@+id/tv_subscribe"
+        style="@style/pop_menu"
+        android:text="@string/subscribe" />
+
+    <TextView
+        android:id="@+id/tv_book_detail"
+        style="@style/pop_menu"
+        android:text="@string/book_detail" />
+
+    <TextView
+        android:id="@+id/tv_share"
+        style="@style/pop_menu"
+        android:text="@string/share" />
+
+    <TextView
+        android:id="@+id/tv_report"
+        style="@style/pop_menu"
+        android:text="@string/report" />
+
+    <TextView
+        android:id="@+id/tv_refresh"
+        style="@style/pop_menu"
+        android:text="@string/refresh" />
+</LinearLayout>

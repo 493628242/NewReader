@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">Reader</string>
     <string name="add_bookshelf">加入书架</string>
+    <string name="enlarge_text_size">A+</string>
+    <string name="narrow_text_size">A-</string>
+    <string name="flip_type">翻</string>
+    <string name="auto_buy">自动购买收费章节</string>
+    <string name="subscribe">全本订阅</string>
+    <string name="book_detail">书籍详情</string>
+    <string name="share">分享</string>
+    <string name="report">内容举报</string>
+    <string name="refresh">刷新本章内容</string>
 </resources>
