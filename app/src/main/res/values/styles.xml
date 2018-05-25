@@ -38,7 +38,8 @@
 
     <style name="pop_menu">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">45dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:textColor">@color/selector_text_color_clicked</item>
         <item name="android:background">@drawable/selector_bg_clicked</item>
         <item name="android:layout_marginBottom">1dp</item>

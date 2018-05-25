@@ -1,4 +1,4 @@
-package com.gray.reader;
+package com.gray.reader.page;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
@@ -23,7 +23,6 @@ import com.gray.reader.element.BottomElement;
 import com.gray.reader.element.Element;
 import com.gray.reader.element.LineElement;
 import com.gray.reader.element.SmallTitleElement;
-import com.gray.reader.page.IReaderPage;
 import com.gray.reader.util.UIUtils;
 
 import java.lang.reflect.Constructor;
@@ -880,7 +879,7 @@ public class ReaderLayout extends FrameLayout {
         animController = null;
     }
 
-    interface AsyncPagingListener {
+    public interface AsyncPagingListener {
         void onFinishListener();
     }
 

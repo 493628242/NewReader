@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="270dp"
-    android:alpha="0.6"
+    android:layout_height="273dp"
     android:minWidth="170dp"
+    android:background="#97000000"
     android:orientation="vertical">
 
     <CheckBox
-        android:id="@+id/tv_auto_buy"
+        android:id="@+id/cb_auto_buy"
         style="@style/pop_menu"
         android:button="@null"
         android:drawableEnd="@drawable/selector_auto_buy"

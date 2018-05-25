@@ -5,11 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.text.Layout;
-import android.text.StaticLayout;
-import android.text.TextPaint;
 
-import com.gray.reader.ReaderLayout;
+import com.gray.reader.page.ReaderLayout;
 import com.gray.reader.util.UIUtils;
 
 import java.lang.ref.SoftReference;

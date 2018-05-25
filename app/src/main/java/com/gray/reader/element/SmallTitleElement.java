@@ -4,8 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-import com.gray.reader.ReaderLayout;
-import com.gray.reader.util.UIUtils;
+import com.gray.reader.page.ReaderLayout;
 
 import java.lang.ref.SoftReference;
 

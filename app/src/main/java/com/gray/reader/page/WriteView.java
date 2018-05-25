@@ -1,22 +1,14 @@
-package com.gray.reader;
+package com.gray.reader.page;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 
-import com.gray.reader.element.BigTitleElement;
 import com.gray.reader.element.BottomElement;
 import com.gray.reader.element.Element;
-import com.gray.reader.element.LineElement;
-import com.gray.reader.element.SmallTitleElement;
-import com.gray.reader.util.UIUtils;
 
 import java.util.ArrayList;
 

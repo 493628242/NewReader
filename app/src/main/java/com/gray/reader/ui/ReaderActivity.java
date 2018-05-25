@@ -1,10 +1,12 @@
-package com.gray.reader;
+package com.gray.reader.ui;
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
@@ -19,6 +21,8 @@ import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.gray.reader.R;
+import com.gray.reader.page.ReaderLayout;
 import com.gray.reader.broadcast.BatteryReceiver;
 import com.gray.reader.page.NormalPage;
 import com.gray.reader.util.UIUtils;
@@ -219,21 +223,24 @@ public class ReaderActivity extends AppCompatActivity {
             switch (v.getId()) {
                 case R.id.img_more:
                     popupMenu.showPop();
+                    if (popupRight.isShow()) {
+                        popupRight.closePop();
+                    }
                     break;
                 case R.id.img_back:
                     ReaderActivity.this.finish();
                     break;
                 case R.id.img_recommend:
-                    //
+                    //推荐
                     break;
                 case R.id.img_reward:
-                    //
+                    //赏
                     break;
                 case R.id.img_ticket:
-                    //
+                    //月票
                     break;
                 case R.id.img_download:
-                    //
+                    //下载
                     break;
             }
         }
@@ -260,7 +267,7 @@ public class ReaderActivity extends AppCompatActivity {
 
     }
 
-    class PopupRight {
+    class PopupRight implements View.OnClickListener {
         PopupWindow popupWindow;
 
         public PopupRight() {
@@ -272,6 +279,12 @@ public class ReaderActivity extends AppCompatActivity {
             popupWindow.setAnimationStyle(R.style.PopupRightAnim);
             // 设置PopupWindow是否能响应点击事件
             popupWindow.setTouchable(true);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            //加入书架
         }
 
         void showPop() {
@@ -293,9 +306,11 @@ public class ReaderActivity extends AppCompatActivity {
         void destroy() {
             popupWindow = null;
         }
+
+
     }
 
-    class PopupMenu {
+    class PopupMenu implements View.OnClickListener {
         PopupWindow popupWindow;
 
         public PopupMenu() {
@@ -309,12 +324,54 @@ public class ReaderActivity extends AppCompatActivity {
             popupWindow.setTouchable(true);
             popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             popupWindow.setFocusable(true);
+            initView(view);
+            popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+                    if (true) { //判断是否需要显示右侧pop
+                        popupRight.showPop();
+                    }
+                }
+            });
 
+        }
+
+        private void initView(View view) {
+            view.findViewById(R.id.cb_auto_buy).setOnClickListener(this);
+            view.findViewById(R.id.tv_subscribe).setOnClickListener(this);
+            view.findViewById(R.id.tv_book_detail).setOnClickListener(this);
+            view.findViewById(R.id.tv_share).setOnClickListener(this);
+            view.findViewById(R.id.tv_report).setOnClickListener(this);
+            view.findViewById(R.id.tv_refresh).setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.cb_auto_buy:
+                    //自动购买收费章节
+                    break;
+                case R.id.tv_subscribe:
+                    //订阅全本
+                    break;
+                case R.id.tv_book_detail:
+                    //书籍详情
+                    break;
+                case R.id.tv_share:
+                    //分享
+                    break;
+                case R.id.tv_report:
+                    //内容举报
+                    break;
+                case R.id.tv_refresh:
+                    //刷新本章内容
+                    break;
+            }
         }
 
         void showPop() {
             popupWindow.showAtLocation(readerLayout, Gravity.END | Gravity.TOP,
-                    0 - UIUtils.dip2px(ReaderActivity.this, 5),
+                    UIUtils.dip2px(ReaderActivity.this, 5),
                     UIUtils.dip2px(ReaderActivity.this, 49)
                             + UIUtils.getStatusBarHeight(ReaderActivity.this));
         }
@@ -332,6 +389,8 @@ public class ReaderActivity extends AppCompatActivity {
         void destroy() {
             popupWindow = null;
         }
+
+
     }
 
     class PopupTypeface implements View.OnClickListener {
@@ -378,6 +437,7 @@ public class ReaderActivity extends AppCompatActivity {
             rbNormal.setOnClickListener(this);
 
             SeekBar sbBrightness = view.findViewById(R.id.sb_brightness);
+            sbBrightness.setProgress(getScreenBrightness());
             sbBrightness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -480,6 +540,17 @@ public class ReaderActivity extends AppCompatActivity {
         void destroy() {
             popupWindow = null;
         }
+    }
+
+    private int getScreenBrightness() {
+        int value = 0;
+        ContentResolver cr = this.getContentResolver();
+        try {
+            value = Settings.System.getInt(cr, Settings.System.SCREEN_BRIGHTNESS);
+        } catch (Settings.SettingNotFoundException e) {
+            Log.e("error", e.getLocalizedMessage());
+        }
+        return value;
     }
 
     /**

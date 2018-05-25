@@ -16,11 +16,12 @@ import android.util.Log;
 import android.view.View;
 
 import com.gray.reader.R;
+import com.gray.reader.util.UIUtils;
 
 /**
  * @author wjy on 2018/4/8.
  */
-public class FlipPage extends BasePage {
+public class FlipPage extends WriteView implements IReaderPage {
     private Paint pointPaint;//绘制各标识点的画笔
     private Paint bgPaint;//背景画笔
     private Paint pathAPaint;//绘制A区域画笔
@@ -128,10 +129,8 @@ public class FlipPage extends BasePage {
 
     @Override
     protected void onDraw(Canvas canvas) {
-
-
-        super.onDraw(canvas);
-        bitmap = Bitmap.createBitmap(getDisplayWidth(), getDisplayHeight(),
+        bitmap = Bitmap.createBitmap(UIUtils.getDisplayWidth(getContext()),
+                UIUtils.getDisplayHeight(getContext()),
                 Bitmap.Config.ARGB_8888);
         bitmapCanvas = new Canvas(bitmap);
         if (a.x == -1 && a.y == -1) {
@@ -351,7 +350,7 @@ public class FlipPage extends BasePage {
     @Override
     public void currentToPrevious(float changeX, float moveY, float moveX) {
         if (mode == null || mode.isEmpty()) {
-            mode = moveY > getDisplayHeight() / 2 ? STYLE_LOWER_RIGHT :
+            mode = moveY > UIUtils.getDisplayHeight(getContext()) / 2 ? STYLE_LOWER_RIGHT :
                     STYLE_TOP_RIGHT;
         }
         setTouchPoint(moveX, moveY, mode);
@@ -366,7 +365,7 @@ public class FlipPage extends BasePage {
     @Override
     public void previousToCurrent(float changeX, float moveY, float moveX) {
         if (mode == null || mode.isEmpty()) {
-            mode = moveY > getDisplayHeight() / 2 ? STYLE_LOWER_RIGHT :
+            mode = moveY > UIUtils.getDisplayHeight(getContext()) / 2 ? STYLE_LOWER_RIGHT :
                     STYLE_TOP_RIGHT;
         }
         setTouchPoint(moveX, moveY, mode);
@@ -380,7 +379,7 @@ public class FlipPage extends BasePage {
 
     @Override
     public ValueAnimator animCurrentToPrevious(float changeX, final float moveY, float moveX) {
-        ValueAnimator animator = ValueAnimator.ofFloat(moveX, 0 - getDisplayWidth());
+        ValueAnimator animator = ValueAnimator.ofFloat(moveX, 0 - UIUtils.getDisplayWidth(getContext()));
         animator.setDuration(5000);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -400,7 +399,7 @@ public class FlipPage extends BasePage {
 
     @Override
     public ValueAnimator animPreviousToCurrent(float changeX, final float moveY, float moveX) {
-        ValueAnimator animator = ValueAnimator.ofFloat(moveX, getDisplayWidth());
+        ValueAnimator animator = ValueAnimator.ofFloat(moveX, UIUtils.getDisplayWidth(getContext()));
         animator.setDuration(5000);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override

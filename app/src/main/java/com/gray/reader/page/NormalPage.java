@@ -2,11 +2,9 @@ package com.gray.reader.page;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 
-import com.gray.reader.WriteView;
 import com.gray.reader.util.UIUtils;
 
 /**
