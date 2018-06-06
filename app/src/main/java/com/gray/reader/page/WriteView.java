@@ -9,6 +9,7 @@ import android.view.View;
 
 import com.gray.reader.element.BottomElement;
 import com.gray.reader.element.Element;
+import com.gray.reader.flip.PageFlipView;
 
 import java.util.ArrayList;
 
@@ -16,29 +17,18 @@ import java.util.ArrayList;
  * @author wjy on 2018/4/10.
  */
 public class WriteView extends View {
-    private Paint paint;
-    public static final int TYPE_PROTECT_EYE = 0;
-    public static final int TYPE_GREEN = 1;
-    public static final int TYPE_PINK = 2;
-    public static final int TYPE_BlACK = 3;
-    private ArrayList<Element> page;
+    protected Paint paint;
+    protected ArrayList<Element> page;
     protected int count;
     protected int index;
     protected float power;
     protected static ReaderLayout.pageProperty pageProperty;
 
     public WriteView(Context context) {
-        this(context, null);
-    }
-
-    public WriteView(Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
-
-    public WriteView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+        super(context);
         init();
     }
+
 
     public static void setPageProperty(ReaderLayout.pageProperty pageProperty) {
         WriteView.pageProperty = pageProperty;
@@ -67,7 +57,7 @@ public class WriteView extends View {
 
 
     public void notifyData() {
-        invalidate();
+        postInvalidate();
     }
 
 
@@ -88,7 +78,13 @@ public class WriteView extends View {
         }
     }
 
-    private void resetPaint() {
+    protected void resetPaint() {
+        paint.setTextAlign(Paint.Align.LEFT);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setAntiAlias(true);
+    }
+
+    protected void resetPaint(Paint paint) {
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setStyle(Paint.Style.FILL);
         paint.setAntiAlias(true);

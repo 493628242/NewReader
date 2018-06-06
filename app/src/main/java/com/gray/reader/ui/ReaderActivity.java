@@ -22,9 +22,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.gray.reader.R;
-import com.gray.reader.page.ReaderLayout;
 import com.gray.reader.broadcast.BatteryReceiver;
-import com.gray.reader.page.NormalPage;
+import com.gray.reader.page.BookPageView;
+import com.gray.reader.page.ReaderLayout;
 import com.gray.reader.util.UIUtils;
 
 public class ReaderActivity extends AppCompatActivity {
@@ -82,6 +82,7 @@ public class ReaderActivity extends AppCompatActivity {
         popupTypeface = new PopupTypeface();
         popupMenu = new PopupMenu();
         readerLayout = findViewById(R.id.reader);
+
         readerLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,15 +102,16 @@ public class ReaderActivity extends AppCompatActivity {
             }
         });
         readerLayout.setData(word, title, author);
-        readerLayout.setPage(NormalPage.class);
+        readerLayout.paging();
         readerLayout.setIndex(1);
-        readerLayout.AsyncPaging(new ReaderLayout.AsyncPagingListener() {
-            @Override
-            public void onFinishListener() {
-                readerLayout.loadData();
-
-            }
-        });
+        readerLayout.setPage(BookPageView.class);
+//        readerLayout.AsyncPaging(new ReaderLayout.AsyncPagingListener() {
+//            @Override
+//            public void onFinishListener() {
+//                readerLayout.loadData();
+//
+//            }
+//        });
 
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_BATTERY_CHANGED);
@@ -589,6 +591,7 @@ public class ReaderActivity extends AppCompatActivity {
 
         }
     }
+
 
     @Override
     protected void onDestroy() {

@@ -47,18 +47,19 @@ public class PageFlipView extends GLSurfaceView implements Renderer {
     int mDuration;
     Handler mHandler;
     PageFlip mPageFlip;
-    PageRender mPageRender;
+    DoublePagesRender mPageRender;
     ReentrantLock mDrawLock;
 
     public PageFlipView(Context context) {
         super(context);
         init(context);
     }
-    
+
     public PageFlipView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
+
     private void init(Context context) {
         // create handler to tackle message
         newHandler();
@@ -82,13 +83,17 @@ public class PageFlipView extends GLSurfaceView implements Renderer {
         // init others
         mPageNo = 1;
         mDrawLock = new ReentrantLock();
-        mPageRender = new SinglePageRender(context, mPageFlip,
+        mPageRender = new DoublePagesRender(context, mPageFlip,
                 mHandler, mPageNo);
         // configure render
         setRenderer(this);
         setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+
     }
 
+    public DoublePagesRender getPageRender() {
+        return mPageRender;
+    }
 
     /**
      * Is auto page mode enabled?
@@ -108,27 +113,25 @@ public class PageFlipView extends GLSurfaceView implements Renderer {
         if (mPageFlip.enableAutoPage(enable)) {
             try {
                 mDrawLock.lock();
-                if (mPageFlip.getSecondPage() != null &&
-                    mPageRender instanceof SinglePageRender) {
-                    mPageRender = new DoublePagesRender(getContext(),
-                                                        mPageFlip,
-                                                        mHandler,
-                                                        mPageNo);
-                    mPageRender.onSurfaceChanged(mPageFlip.getSurfaceWidth(),
-                                                 mPageFlip.getSurfaceHeight());
-                }
-                else if (mPageFlip.getSecondPage() == null &&
-                         mPageRender instanceof DoublePagesRender) {
-                    mPageRender = new SinglePageRender(getContext(),
-                                                       mPageFlip,
-                                                       mHandler,
-                                                       mPageNo);
-                    mPageRender.onSurfaceChanged(mPageFlip.getSurfaceWidth(),
-                                                 mPageFlip.getSurfaceHeight());
-                }
+//                if (mPageFlip.getSecondPage() != null &&
+//                        mPageRender instanceof SinglePageRender) {
+//                    mPageRender = new DoublePagesRender(getContext(),
+//                            mPageFlip,
+//                            mHandler,
+//                            mPageNo);
+//                    mPageRender.onSurfaceChanged(mPageFlip.getSurfaceWidth(),
+//                            mPageFlip.getSurfaceHeight());
+//                } else if (mPageFlip.getSecondPage() == null &&
+//                        mPageRender instanceof DoublePagesRender) {
+//                    mPageRender = new SinglePageRender(getContext(),
+//                            mPageFlip,
+//                            mHandler,
+//                            mPageNo);
+//                    mPageRender.onSurfaceChanged(mPageFlip.getSurfaceWidth(),
+//                            mPageFlip.getSurfaceHeight());
+//                }
                 requestRender();
-            }
-            finally {
+            } finally {
                 mDrawLock.unlock();
             }
         }
@@ -171,7 +174,7 @@ public class PageFlipView extends GLSurfaceView implements Renderer {
         // if the animation is going, we should ignore this event to avoid
         // mess drawing on screen
         if (!mPageFlip.isAnimating() &&
-            mPageFlip.getFirstPage() != null) {
+                mPageFlip.getFirstPage() != null) {
             mPageFlip.onFingerDown(x, y);
         }
     }
@@ -185,8 +188,7 @@ public class PageFlipView extends GLSurfaceView implements Renderer {
     public void onFingerMove(float x, float y) {
         if (mPageFlip.isAnimating()) {
             // nothing to do during animating
-        }
-        else if (mPageFlip.canAnimate(x, y)) {
+        } else if (mPageFlip.canAnimate(x, y)) {
             // if the point is out of current page, try to start animating
             onFingerUp(x, y);
         }
@@ -195,11 +197,10 @@ public class PageFlipView extends GLSurfaceView implements Renderer {
             try {
                 mDrawLock.lock();
                 if (mPageRender != null &&
-                    mPageRender.onFingerMove(x, y)) {
+                        mPageRender.onFingerMove(x, y)) {
                     requestRender();
                 }
-            }
-            finally {
+            } finally {
                 mDrawLock.unlock();
             }
         }
@@ -217,11 +218,10 @@ public class PageFlipView extends GLSurfaceView implements Renderer {
             try {
                 mDrawLock.lock();
                 if (mPageRender != null &&
-                    mPageRender.onFingerUp(x, y)) {
+                        mPageRender.onFingerUp(x, y)) {
                     requestRender();
                 }
-            }
-            finally {
+            } finally {
                 mDrawLock.unlock();
             }
         }
@@ -239,8 +239,7 @@ public class PageFlipView extends GLSurfaceView implements Renderer {
             if (mPageRender != null) {
                 mPageRender.onDrawFrame();
             }
-        }
-        finally {
+        } finally {
             mDrawLock.unlock();
         }
     }
@@ -248,8 +247,8 @@ public class PageFlipView extends GLSurfaceView implements Renderer {
     /**
      * Handle surface is changed
      *
-     * @param gl OpenGL handle
-     * @param width new width of surface
+     * @param gl     OpenGL handle
+     * @param width  new width of surface
      * @param height new height of surface
      */
     @Override
@@ -263,24 +262,23 @@ public class PageFlipView extends GLSurfaceView implements Renderer {
                 if (!(mPageRender instanceof DoublePagesRender)) {
                     mPageRender.release();
                     mPageRender = new DoublePagesRender(getContext(),
-                                                        mPageFlip,
-                                                        mHandler,
-                                                        pageNo);
+                            mPageFlip,
+                            mHandler,
+                            pageNo);
                 }
             }
             // if there is only one page, create single page render when need
-            else if(!(mPageRender instanceof SinglePageRender)) {
-                mPageRender.release();
-                mPageRender = new SinglePageRender(getContext(),
-                                                   mPageFlip,
-                                                   mHandler,
-                                                   pageNo);
-            }
+//            else if (!(mPageRender instanceof SinglePageRender)) {
+//                mPageRender.release();
+//                mPageRender = new SinglePageRender(getContext(),
+//                        mPageFlip,
+//                        mHandler,
+//                        pageNo);
+//            }
 
             // let page render handle surface change
             mPageRender.onSurfaceChanged(width, height);
-        }
-        catch (PageFlipException e) {
+        } catch (PageFlipException e) {
             Log.e(TAG, "Failed to run PageFlipFlipRender:onSurfaceChanged");
         }
     }
@@ -288,15 +286,14 @@ public class PageFlipView extends GLSurfaceView implements Renderer {
     /**
      * Handle surface is created
      *
-     * @param gl OpenGL handle
+     * @param gl     OpenGL handle
      * @param config EGLConfig object
      */
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         try {
             mPageFlip.onSurfaceCreated();
-        }
-        catch (PageFlipException e) {
+        } catch (PageFlipException e) {
             Log.e(TAG, "Failed to run PageFlipFlipRender:onSurfaceCreated");
         }
     }
@@ -316,11 +313,10 @@ public class PageFlipView extends GLSurfaceView implements Renderer {
                             // notify page render to handle ended drawing
                             // message
                             if (mPageRender != null &&
-                                mPageRender.onEndedDrawing(msg.arg1)) {
+                                    mPageRender.onEndedDrawing(msg.arg1)) {
                                 requestRender();
                             }
-                        }
-                        finally {
+                        } finally {
                             mDrawLock.unlock();
                         }
                         break;

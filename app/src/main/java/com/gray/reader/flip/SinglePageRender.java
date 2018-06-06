@@ -19,7 +19,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Message;
 
@@ -46,7 +45,7 @@ public class SinglePageRender extends PageRender {
 
     /**
      * Constructor
-     * @see {@link #PageRender(Context, PageFlip, Handler, int)}
+     * @see {@link #(Context, PageFlip, Handler, int)}
      */
     public SinglePageRender(Context context, PageFlip pageFlip,
                             Handler handler, int pageNo) {
@@ -124,7 +123,7 @@ public class SinglePageRender extends PageRender {
         mBitmap = Bitmap.createBitmap((int)page.width(), (int)page.height(),
                                       Bitmap.Config.ARGB_8888);
         mCanvas.setBitmap(mBitmap);
-        LoadBitmapTask.get(mContext).set(width, height, 1);
+//        LoadBitmapTask.get(mContext).set(width, height, 1);
     }
 
     /**
@@ -177,11 +176,11 @@ public class SinglePageRender extends PageRender {
         p.setFilterBitmap(true);
 
         // 1. draw background bitmap
-        Bitmap background = LoadBitmapTask.get(mContext).getBitmap();
-        Rect rect = new Rect(0, 0, width, height);
-        mCanvas.drawBitmap(background, null, rect, p);
-        background.recycle();
-        background = null;
+//        Bitmap background = LoadBitmapTask.get(mContext).getBitmap();
+//        Rect rect = new Rect(0, 0, width, height);
+//        mCanvas.drawBitmap(background, null, rect, p);
+//        background.recycle();
+//        background = null;
 
         // 2. draw page number
         int fontSize = calcFontSize(80);

@@ -23,6 +23,7 @@ import com.gray.reader.element.BottomElement;
 import com.gray.reader.element.Element;
 import com.gray.reader.element.LineElement;
 import com.gray.reader.element.SmallTitleElement;
+import com.gray.reader.flip.PageFlipView;
 import com.gray.reader.util.UIUtils;
 
 import java.lang.reflect.Constructor;
@@ -170,6 +171,7 @@ public class ReaderLayout extends FrameLayout {
         pageData.AsyncPaging(listener);
     }
 
+
     public void setPower(int level) {
         pageProperty.power = ((float) level / 100);
         ((WriteView) currentPage).setPower(pageProperty.power);
@@ -312,6 +314,13 @@ public class ReaderLayout extends FrameLayout {
         ((WriteView) readerPage).setIndex(index);
         ((WriteView) readerPage).setCount(pageData.getCount());
         ((WriteView) readerPage).setPage(page);
+        if (readerPage instanceof BookPageView) {
+            BookPageView readerPage1 = (BookPageView) readerPage;
+            Log.e("setPageData", "setPageData: "+pageData.getCount());
+            if (index + 1 <= pageData.getCount()) {
+                readerPage1.setSecondPage(pageData.getPage(index + 1));
+            }
+        }
         ((WriteView) readerPage).setPower(pageProperty.power);
         ((WriteView) readerPage).notifyData();
     }
@@ -794,6 +803,8 @@ public class ReaderLayout extends FrameLayout {
                 setPageData(previousPage, index - 1);
             }
             currentPage.reset();
+            previousPage.reset();
+            nextPage.reset();
             ((View) currentPage).bringToFront();
         }
 
@@ -807,8 +818,9 @@ public class ReaderLayout extends FrameLayout {
             if (pageData != null && pageData.getCount() > index) {
                 setPageData(nextPage, index + 1);
             }
-
             currentPage.reset();
+            previousPage.reset();
+            nextPage.reset();
             ((View) currentPage).bringToFront();
 
         }

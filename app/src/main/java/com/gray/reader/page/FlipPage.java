@@ -46,11 +46,7 @@ public class FlipPage extends WriteView implements IReaderPage {
     public static final String STYLE_LOWER_RIGHT = "STYLE_LOWER_RIGHT";//f点在右下角
 
     public FlipPage(Context context) {
-        this(context, null);
-    }
-
-    public FlipPage(Context context, @Nullable AttributeSet attrs) {
-        super(context, attrs);
+        super(context);
         init();
     }
 
@@ -145,6 +141,9 @@ public class FlipPage extends WriteView implements IReaderPage {
 //            bitmapCanvas.drawPath(getPathB(), pathBPaint);
         }
         canvas.drawBitmap(bitmap, 0, 0, null);
+//        super.onDraw(bitmapCanvas);
+        bitmap.recycle();
+        bitmap = null;
     }
 
     /**
@@ -380,12 +379,11 @@ public class FlipPage extends WriteView implements IReaderPage {
     @Override
     public ValueAnimator animCurrentToPrevious(float changeX, final float moveY, float moveX) {
         ValueAnimator animator = ValueAnimator.ofFloat(moveX, 0 - UIUtils.getDisplayWidth(getContext()));
-        animator.setDuration(5000);
+        animator.setDuration(500);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float curValue = (float) animation.getAnimatedValue();
-                Log.e("aaa", curValue + "@");
                 FlipPage.this.setTouchPoint(curValue, moveY, mode);
             }
         });
@@ -400,13 +398,13 @@ public class FlipPage extends WriteView implements IReaderPage {
     @Override
     public ValueAnimator animPreviousToCurrent(float changeX, final float moveY, float moveX) {
         ValueAnimator animator = ValueAnimator.ofFloat(moveX, UIUtils.getDisplayWidth(getContext()));
-        animator.setDuration(5000);
+        animator.setDuration(500);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 float curValue = (float) animation.getAnimatedValue();
                 Log.e("curValue", curValue + "!");
-                FlipPage.this.setTouchPoint(curValue, moveY, mode);
+                setTouchPoint(curValue, moveY, mode);
             }
         });
         return animator;
@@ -415,7 +413,6 @@ public class FlipPage extends WriteView implements IReaderPage {
     @Override
     public ValueAnimator animNextToCurrent(float changeX, float moveY, float moveX) {
         return ObjectAnimator.ofFloat(this, "translationX", 0, 0);
-
     }
 
     @Override

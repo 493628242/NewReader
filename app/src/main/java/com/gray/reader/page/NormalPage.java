@@ -12,15 +12,7 @@ import com.gray.reader.util.UIUtils;
  */
 public class NormalPage extends WriteView implements IReaderPage {
     public NormalPage(Context context) {
-        this(context, null);
-    }
-
-    public NormalPage(Context context, @Nullable AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
-
-    public NormalPage(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+        super(context);
     }
 
 
